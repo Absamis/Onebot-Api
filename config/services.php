@@ -27,7 +27,12 @@ return [
     'resend' => [
         'key' => env('RESEND_KEY'),
     ],
-
+    'facebook' => [
+        'api_url' => env("FACEBOOK_API_URL"),
+        'app_id' => env("FACEBOOK_APP_ID"),
+        'app_secret' => env("FACEBOOK_APP_SECRET"),
+        'api_version' => env("FACEBOOK_API_VERSION")
+    ],
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),

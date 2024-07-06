@@ -14,11 +14,11 @@ class SigninOptionSeeder extends Seeder
     public function run(): void
     {
         //
-        SigninOption::create([
-            "name" => "Facebook"
+        SigninOption::create(["name" => "Facebook",
+            "code" => "fb"
         ]);
-        SigninOption::create([
-            "name" => "Google"
+        SigninOption::create(["name" => "Google",
+            "code" => "google"
         ]);
     }
 }
