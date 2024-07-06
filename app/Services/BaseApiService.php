@@ -81,14 +81,9 @@ class BaseApiService
     }
     public function getRequest($url, $data = [])
     {
-        try {
-            $resp = $this->rawRequest
-                ->get($url, $data);
-            return $resp;
-        } catch (Exception $ex) {
-            //echo $ex;
-            return [];
-        }
+        $resp = $this->rawRequest
+            ->get($url, $data);
+        return $resp;
     }
 
     public function postRequest($url, $data = [])

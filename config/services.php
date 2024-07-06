@@ -31,7 +31,8 @@ return [
         'api_url' => env("FACEBOOK_API_URL"),
         'app_id' => env("FACEBOOK_APP_ID"),
         'app_secret' => env("FACEBOOK_APP_SECRET"),
-        'api_version' => env("FACEBOOK_API_VERSION")
+        'api_version' => env("FACEBOOK_API_VERSION"),
+        'config_id' => env("FACEBOOK_CONFIG_ID")
     ],
     'slack' => [
         'notifications' => [

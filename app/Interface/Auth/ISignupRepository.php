@@ -7,5 +7,6 @@ use App\Models\Configurations\SigninOption;
 interface ISignupRepository
 {
     //
-    public function signup(SigninOption $option, $redirect_url);
+    public function signupRequest(SigninOption $option, $redirect_url);
+    public function signup(SigninOption $option, $data = []);
 }

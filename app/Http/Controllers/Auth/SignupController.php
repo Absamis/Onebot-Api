@@ -18,10 +18,15 @@ class SignupController extends Controller
         $this->signupRepo = $sgn;
     }
 
+    public function signupRequest(Request $request, SigninOption $option)
+    {
+        $resp = $this->signupRepo->signupRequest($option, $request->input("redirect_url"));
+        return ApiResponse::success("Login url fetched", $resp);
+    }
+
     public function signup(Request $request, SigninOption $option)
     {
-        !$request->has("redirect_url") ? abort(400, "Redirect url is required") : null;
-        $resp = $this->signupRepo->signup($option, $request->input("redirect_url"));
-        return ApiResponse::success("Login url fetched", $resp);
+        $resp = $this->signupRepo->signup($option, $request->all());
+        return ApiResponse::success("Response", $resp);
     }
 }
