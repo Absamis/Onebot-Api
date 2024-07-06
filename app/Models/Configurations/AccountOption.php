@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class AccountOption extends Model
 {
     use HasFactory;
+
+    protected $table = 'account_options';
+
+    protected $fillable = [];
 }
