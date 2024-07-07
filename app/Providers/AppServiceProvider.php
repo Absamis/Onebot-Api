@@ -10,6 +10,8 @@ use App\Listeners\SendWalletFundedNotification;
 use App\Listeners\SendWelcomeMessage;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Support\Facades\Event;
+use App\Http\Middleware\Authenticate as MiddlewareAuthenticate;
+use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -20,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         //
+        $this->app->bind(Authenticate::class, MiddlewareAuthenticate::class);
     }
 
     /**
