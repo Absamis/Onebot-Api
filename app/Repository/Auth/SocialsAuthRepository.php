@@ -4,16 +4,16 @@ namespace App\Repository\Auth;
 
 use App\DTOs\SignupDataDto;
 use App\Enums\AppEnums;
-use App\Enums\Enums\AccountEnums;
+use App\Enums\AccountEnums;
 use App\Events\UserAccountVerified;
-use App\Interface\Auth\ISignupRepository;
+use App\Interfaces\Auth\ISocialsAuthRepository;
 use App\Models\Configurations\SigninOption;
 use App\Models\User;
 use App\Models\UserSigninOption;
 use App\Services\Socials\FacebookApiService;
 use App\Services\Socials\GoogleService;
 
-class SignupRepository implements ISignupRepository
+class SocialsAuthRepository implements ISocialsAuthRepository
 {
     /**
      * Create a new class instance.
@@ -27,12 +27,12 @@ class SignupRepository implements ISignupRepository
         $this->googleService = $gleService;
     }
 
-    public function signupRequest(SigninOption $option, $redirect_url)
+    public function authRequest(SigninOption $option, $redirect_url)
     {
         switch ($option->code) {
             case "fb":
                 !$redirect_url ? abort(400, "Redirect url is required") : null;
-                return $this->fbService->getLoginUrl($redirect_url);
+                return $this->fbService->getLoginUrl($redirect_url, true);
                 break;
             case "google":
                 !$redirect_url ? abort(400, "Redirect url is required") : null;
@@ -91,7 +91,7 @@ class SignupRepository implements ISignupRepository
             "name" => $signupData->name,
             "email" => $signupData->email,
             "photo" => $signupData->photo,
-            "status" => AccountEnums::active,
+            "status" => AccountEnums::verifiedAccount,
         ]);
         UserSigninOption::create([
             "userid" => $user->id,

@@ -3,7 +3,7 @@
 namespace App\Services\Socials;
 
 use App\DTOs\SignupDataDto;
-use App\Enums\Enums\GoogleScopesEnums;
+use App\Enums\GoogleScopesEnums;
 use App\Services\BaseApiService;
 use Illuminate\Support\Facades\Cache;
 

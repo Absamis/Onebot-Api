@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Classes\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
-use App\Interface\Auth\ISignupRepository;
+use App\Interfaces\Auth\ISocialsAuthRepository;
 use App\Models\Configurations\SigninOption;
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
@@ -15,14 +15,14 @@ class SignupController extends Controller
     //
 
     public $signupRepo;
-    public function __construct(ISignupRepository $sgn)
+    public function __construct(ISocialsAuthRepository $sgn)
     {
         $this->signupRepo = $sgn;
     }
 
     public function signupRequest(Request $request, SigninOption $option)
     {
-        $resp = $this->signupRepo->signupRequest($option, $request->input("redirect_url"));
+        $resp = $this->signupRepo->authRequest($option, $request->input("redirect_url"));
         return ApiResponse::success("Login url fetched", $resp);
     }
 

@@ -21,7 +21,7 @@ class UserResource extends JsonResource
             "photo" => $this->photo,
             "status" => $this->status,
             "access_token" => $this->when($this->access_token, $this->access_token),
-            "accounts" => $this->accounts->with(["account", "roles"])->get(),
+            "accounts" => UserAccountResource::collection($this->accounts),
             "signin_options" => $this->signin_options
         ];
     }
