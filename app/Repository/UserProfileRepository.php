@@ -2,7 +2,9 @@
 
 namespace App\Repository;
 
+use App\Enums\ActivityLogEnums;
 use App\Interfaces\IUserProfileRepository;
+use App\Services\UserService;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
@@ -23,11 +25,6 @@ class UserProfileRepository implements IUserProfileRepository
         return $details;
     }
 
-    public function updateDailyLimit($amount){
-        $this->user->wallet->transaction_limit = $amount;
-        $this->user->wallet->save();
-        return $this->user;
-    }
 
     public function changeProfilePhoto($image){
         $prevImg = $this->user->getRawOriginal('photo');
@@ -38,6 +35,7 @@ class UserProfileRepository implements IUserProfileRepository
         $url = Storage::disk("upl")->put("images", $image);
         $this->user->photo = $url;
         $this->user->save();
+        UserService::logActivity(ActivityLogEnums::userChangePhoto);
         return $this->user;
     }
 }

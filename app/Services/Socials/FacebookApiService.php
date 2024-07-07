@@ -42,7 +42,7 @@ class FacebookApiService extends BaseApiService
         $resp = $this->apiRequest()->getRequest("/oauth/access_token", [
             "grant_type" => "fb_exchange_token",
             "client_id" => $this->apiKey,
-            "client_secret" => $this->apiToken,
+            "client_secret" => $this->apiSecret,
             "fb_exchange_token" => $token
         ]);
         $resp = $resp->json() ?? [];
@@ -70,13 +70,13 @@ class FacebookApiService extends BaseApiService
     public function getUserData($accessToken)
     {
         $resp = $this->apiRequest()->getRequest("/me", [
-            "access_token" => $accessToken
+            "access_token" => $accessToken,
+            "fields" => "id,name,email"
         ]);
         $resp = $resp->json() ?? [];
         $uid = $resp["id"] ?? null;
         if (!$uid)
             abort(400, "Error getting facebook data. Try again", ["data" => $resp]);
-        print_r($resp);
         return $resp;
     }
 }

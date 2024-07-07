@@ -2,6 +2,7 @@
 
 use App\Enums\AppEnums;
 use App\Models\AppSetting;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 
 function getClientIP()
@@ -45,13 +46,6 @@ function verifyLoginState($state, $suffix)
     $loginState != $state ? abort(400, "Invalid request sent") : /*Cache::forget(getClientIP() . $suffix)*/ null;
     return true;
 }
-// function appSettings()
-// {
-//     $settings = Cache::remember("app-settings", 3600, function () {
-//         return AppSetting::where("status", AppEnums::active)->first();
-//     });
-//     return $settings;
-// }
 
 function pageCount()
 {

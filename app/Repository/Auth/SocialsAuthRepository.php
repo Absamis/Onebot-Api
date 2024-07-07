@@ -5,6 +5,7 @@ namespace App\Repository\Auth;
 use App\DTOs\SignupDataDto;
 use App\Enums\AppEnums;
 use App\Enums\AccountEnums;
+use App\Enums\ActivityLogEnums;
 use App\Events\UserAccountVerified;
 use App\Interfaces\Auth\ISocialsAuthRepository;
 use App\Models\Configurations\SigninOption;
@@ -12,6 +13,8 @@ use App\Models\User;
 use App\Models\UserSigninOption;
 use App\Services\Socials\FacebookApiService;
 use App\Services\Socials\GoogleService;
+use App\Services\UserService;
+use Illuminate\Support\Facades\Auth;
 
 class SocialsAuthRepository implements ISocialsAuthRepository
 {
@@ -43,12 +46,12 @@ class SocialsAuthRepository implements ISocialsAuthRepository
         }
     }
 
-    public function signup(SigninOption $option, $data = [])
+    private function authorize($code, $data)
     {
-        switch ($option->code) {
+        switch ($code) {
             case "fb":
                 verifyLoginState($data["state"], "fb-login-state");
-                $this->fbService->getFbUserData($data["code"]);
+                $signupData = $this->fbService->getFbUserData($data["code"]);
                 break;
             case "google":
                 verifyLoginState($data["state"], "google-login-state");
@@ -57,11 +60,31 @@ class SocialsAuthRepository implements ISocialsAuthRepository
             default:
                 abort(400, "Sigin option is not available");
         }
+        return $signupData;
+    }
+
+    public function signup(SigninOption $option, $data = [])
+    {
+        $signupData = $this->authorize($option->code, $data);
+        $checkUser = User::where("email", $signupData->email)->first();
+        $checkUser ? abort(400, "Account with this email already exsist") : null;
         $check = UserSigninOption::where(["type" => $option->code, "signin_app_id" => $signupData->app_id])->first();
         if (!$check) {
             $user = $this->createNewAccount($option->code, $signupData);
             UserAccountVerified::dispatch($user);
             return $this->loginUser($user);
+        } else {
+            $user = $this->updateSigninDetails($check, $signupData);
+            return $this->loginUser($user);
+        }
+    }
+
+    public function signin(SigninOption $option, $data = [])
+    {
+        $signupData = $this->authorize($option->code, $data);
+        $check = UserSigninOption::where(["type" => $option->code, "signin_app_id" => $signupData->app_id])->first();
+        if (!$check) {
+            return abort(400, "Sigin option is not registered yet. kindly create an account");
         } else {
             $user = $this->updateSigninDetails($check, $signupData);
             return $this->loginUser($user);
@@ -82,6 +105,11 @@ class SocialsAuthRepository implements ISocialsAuthRepository
     {
         $token = $user->createToken(getClientIP() . $user->id . "token")->plainTextToken;
         $user->access_token = $token;
+        Auth::login($user);
+        UserService::logActivity(ActivityLogEnums::userSigin, [
+            "location" => getClientIP(),
+            "time" => now()->toDateTime()
+        ]);
         return $user;
     }
 
