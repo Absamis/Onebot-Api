@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Auth;
 
 use App\Classes\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use App\Interface\Auth\ISignupRepository;
 use App\Models\Configurations\SigninOption;
+use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
 
 class SignupController extends Controller
@@ -26,7 +28,11 @@ class SignupController extends Controller
 
     public function signup(Request $request, SigninOption $option)
     {
-        $resp = $this->signupRepo->signup($option, $request->all());
-        return ApiResponse::success("Response", $resp);
+        $data = $request->validate([
+            "code" => ["required"],
+            "state" => ["required"]
+        ]);
+        $resp = $this->signupRepo->signup($option, $data);
+        return ApiResponse::success("Signup successful", new UserResource($resp));
     }
 }

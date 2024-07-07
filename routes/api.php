@@ -15,7 +15,7 @@ Route::get('/user', function (Request $request) {
 
 Route::prefix("auth")->group(function () {
     Route::get("{option}/signup-request", [SignupController::class, "signupRequest"]);
-    Route::get("{option}/signup", [SignupController::class, "signup"]);
+    Route::post("{option}/signup", [SignupController::class, "signup"]);
 });
 
 Route::prefix("configs")->group(function () {

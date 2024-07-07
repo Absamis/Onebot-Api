@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string("name")->unique();
             $table->text("description")->nullable();
             $table->string("image")->nullable();
+            $table->string("code")->unique();
             $table->integer("status")->default(AppEnums::active);
             $table->timestamps();
         });

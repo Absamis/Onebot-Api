@@ -11,8 +11,7 @@ class FacebookApiService extends BaseApiService
 
     public function getLoginUrl($redirect_url, $force = false)
     {
-        $loginState = uniqid(mt_rand(100, 999));
-        Cache::put(getClientIP() . "-fb_login_state", $loginState, 300);
+        $loginState = setLoginState("fb-login-state");
         Cache::put(getClientIP() . "-fb_rdr", $redirect_url, 300);
         $scope = FacebookScopesEnums::loginScope;
         $req = $force ? "&auth_type=rerequest"  : null;

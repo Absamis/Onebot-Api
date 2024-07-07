@@ -34,6 +34,11 @@ return [
         'api_version' => env("FACEBOOK_API_VERSION"),
         'config_id' => env("FACEBOOK_CONFIG_ID")
     ],
+    'google' => [
+        'api_url' => env("GOOGLE_API_URL"),
+        'client_id' => env("GOOGLE_CLIENT_ID"),
+        'client_secret' => env("GOOGLE_CLIENT_SECRET")
+    ],
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),

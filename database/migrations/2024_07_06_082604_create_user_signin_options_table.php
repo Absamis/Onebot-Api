@@ -15,17 +15,17 @@ return new class extends Migration
         Schema::create('user_signin_options', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger("userid");
-            $table->unsignedBigInteger("type");
+            $table->string("type");
             $table->string("signin_app_id")->unique();
             $table->string("name")->nullable();
             $table->string("email")->nullable();
             $table->text("token")->nullable();
             $table->text("refresh_token")->nullable();
             $table->string("photo")->nullable();
+            $table->string("token_expires_in")->nullable();
             $table->integer("status")->default(AppEnums::active);
             $table->timestamps();
             $table->foreign("userid")->references("id")->on("users")->cascadeOnDelete();
-            $table->foreign("type")->references("id")->on("signin_options")->cascadeOnDelete();
         });
     }
 

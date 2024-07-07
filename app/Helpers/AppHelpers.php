@@ -31,6 +31,19 @@ function getClientUserAgent()
     return $_SERVER['HTTP_USER_AGENT'];
 }
 
+
+function setLoginState($suffix)
+{
+    $loginState = uniqid(mt_rand(100, 999));
+    Cache::put(getClientIP() . $suffix, $loginState, 300);
+    return $loginState;
+}
+
+function verifyLoginState($state, $suffix)
+{
+    $loginState = cache(getClientIP() . $suffix);
+    return $loginState != $state ? abort(400, "Invalid request sent") : true;
+}
 // function appSettings()
 // {
 //     $settings = Cache::remember("app-settings", 3600, function () {

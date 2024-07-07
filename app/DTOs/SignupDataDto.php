@@ -2,7 +2,7 @@
 
 namespace App\DTOs;
 
-class SocialsDataDto
+class SignupDataDto
 {
     /**
      * Create a new class instance.
@@ -13,6 +13,8 @@ class SocialsDataDto
     public $accessToken;
     public $refreshToken;
     public $tokenExpiresIn;
+    public $type;
+    public $photo;
     public function __construct()
     {
         //
