@@ -42,7 +42,8 @@ function setLoginState($suffix)
 function verifyLoginState($state, $suffix)
 {
     $loginState = cache(getClientIP() . $suffix);
-    return $loginState != $state ? abort(400, "Invalid request sent") : true;
+    $loginState != $state ? abort(400, "Invalid request sent") : Cache::forget(getClientIP() . $suffix);
+    return true;
 }
 // function appSettings()
 // {

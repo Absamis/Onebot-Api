@@ -9,6 +9,7 @@ use App\Events\UserAccountVerified;
 use App\Interface\Auth\ISignupRepository;
 use App\Models\Configurations\SigninOption;
 use App\Models\User;
+use App\Models\UserSigninOption;
 use App\Services\Socials\FacebookApiService;
 use App\Services\Socials\GoogleService;
 
@@ -56,7 +57,7 @@ class SignupRepository implements ISignupRepository
             default:
                 abort(400, "Sigin option is not available");
         }
-        $check = SigninOption::where(["type" => $option->code, "signin_app_id" => $signupData->app_id])->first();
+        $check = UserSigninOption::where(["type" => $option->code, "signin_app_id" => $signupData->app_id])->first();
         if (!$check) {
             $user = $this->createNewAccount($option->code, $signupData);
             UserAccountVerified::dispatch($user);
@@ -92,7 +93,7 @@ class SignupRepository implements ISignupRepository
             "photo" => $signupData->photo,
             "status" => AccountEnums::active,
         ]);
-        SigninOption::create([
+        UserSigninOption::create([
             "userid" => $user->id,
             "type" => $type,
             "signin_app_id" => $signupData->app_id,
