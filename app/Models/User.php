@@ -56,6 +56,8 @@ class User extends Authenticatable
     {
         return Attribute::make(
             get: function ($value) {
+                if (!$value)
+                    return null;
                 if (preg_match("/^(https:\/\/|http:\/\/)/", $value))
                     return $value;
                 return Storage::disk("upl")->url($value);

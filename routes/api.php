@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\SigninController;
 use App\Http\Controllers\Auth\SignupController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -13,6 +14,7 @@ use App\Http\Controllers\UserController;
 Route::prefix("auth")->group(function () {
     Route::get("{option}/auth-request", [SignupController::class, "signupRequest"]);
     Route::post("{option}/signup", [SignupController::class, "signup"]);
+    Route::post("{option}/signin", [SigninController::class, "signin"]);
 });
 
 Route::middleware("auth:sanctum")->group(function () {
