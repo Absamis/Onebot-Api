@@ -13,11 +13,11 @@ class UserAccount extends Model
 
     public function account()
     {
-        return $this->belongsTo(Account::class, "account_id");
+        return $this->hasOne(Account::class, "account_id");
     }
 
-    public function roles()
+    public function role()
     {
-        return $this->belongsTo(Role::class, "role_id");
+        return $this->hasOne(Role::class, "role_id");
     }
 }

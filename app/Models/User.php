@@ -4,7 +4,6 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
-use App\Models\Configurations\SigninOption;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -53,11 +52,11 @@ class User extends Authenticatable
 
     public function accounts()
     {
-        $this->hasMany(UserAccount::class, "userid");
+        return $this->hasMany(UserAccount::class, "userid");
     }
 
     public function signin_options()
     {
-        $this->hasMany(SigninOption::class, "userid");
+        return $this->hasMany(UserSigninOption::class, "userid");
     }
 }

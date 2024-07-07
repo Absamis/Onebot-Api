@@ -2,7 +2,7 @@
 
 namespace App\Services\Socials;
 
-use App\Enums\Enums\FacebookScopesEnums;
+use App\Enums\FacebookScopesEnums;
 use App\Services\BaseApiService;
 use Illuminate\Support\Facades\Cache;
 

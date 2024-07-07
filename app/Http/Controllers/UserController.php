@@ -95,24 +95,4 @@ class UserController extends Controller
         $resp = $this->profileRepo->validatePin($data);
         return ApiResponse::success("Pin is valid", new UserResource($resp));
     }
-
-    public function resetPin()
-    {
-        $user = auth()->user();
-        $email = $user->email;
-        $vrf = $this->vrfRepo->getVerificationCode($user, AccountEnums::pinVerificationType);
-        Notification::send($user, new VerificationCodeNotification($vrf));
-        return ApiResponse::success("verification code sent", new VerificationResource($vrf));
-    }
-
-    // public function updateDailyLimit(Request $request)
-    // {
-    //     $minAmt = appSettings()->min_transaction_limit;
-    //     $maxAmt = appSettings()->max_transaction_limit;
-    //     $data = $request->validate([
-    //         "amount" => ["required", "numeric", "min:$minAmt", "max:$maxAmt"],
-    //     ]);
-    //     $resp = $this->profileRepo->updateDailyLimit($data["amount"]);
-    //     return ApiResponse::success("Transaction limit updated successfully", new UserResource($resp));
-    // }
 }
