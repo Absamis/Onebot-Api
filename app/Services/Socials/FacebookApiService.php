@@ -2,6 +2,7 @@
 
 namespace App\Services\Socials;
 
+use App\DTOs\SignupDataDto;
 use App\Enums\FacebookScopesEnums;
 use App\Services\BaseApiService;
 use Illuminate\Support\Facades\Cache;
@@ -20,11 +21,35 @@ class FacebookApiService extends BaseApiService
         return ["url" => $url];
     }
 
-    public function getFbUserData($code)
+    public function getFbUserData($code): SignupDataDto
     {
-        $accessToken = $this->getAccessToken($code);
-        $uData = $this->getUserData($accessToken);
-        return $uData;
+        $accResp = $this->getAccessToken($code);
+        $data = $this->getUserData($accResp["access_token"]);
+        $socialData = new SignupDataDto();
+        $socialData->name = $data["name"];
+        $socialData->email = $data["email"] ?? null;
+        $socialData->app_id = $data["id"];
+        $socialData->accessToken = $accResp["access_token"];
+        $socialData->refreshToken = $accResp["refresh_token"] ?? null;
+        $socialData->tokenExpiresIn = $accResp["expires_in"];
+        $socialData->photo = $data["photo"] ?? null;
+        return $socialData;
+        // return $uData;
+    }
+
+    public function getLongLivedAccessToken($token)
+    {
+        $resp = $this->apiRequest()->getRequest("/oauth/access_token", [
+            "grant_type" => "fb_exchange_token",
+            "client_id" => $this->apiKey,
+            "client_secret" => $this->apiToken,
+            "fb_exchange_token" => $token
+        ]);
+        $resp = $resp->json() ?? [];
+        $tkn = $resp["access_token"] ?? null;
+        if (!$tkn)
+            abort(400, "Error connecting to facebook. Try again", ["data" => $resp]);
+        return $resp;
     }
 
     public function getAccessToken($code)
@@ -32,13 +57,14 @@ class FacebookApiService extends BaseApiService
         $resp = $this->apiRequest()->getRequest("/oauth/access_token", [
             "client_id" => $this->apiKey,
             "client_secret" => $this->apiSecret,
-            "redirect_uri" => cache(getClientIP() . "-fb_rdr"),
+            "redirect_uri" => trim(cache(getClientIP() . "-fb_rdr"), "/") . "/",
             "code" => $code
         ]);
+        $resp = $resp->json() ?? [];
         $tkn = $resp["access_token"] ?? null;
         if (!$tkn)
             abort(400, "Error connecting to facebook. Try again", ["data" => $resp]);
-        return $resp["access_token"];
+        return $this->getLongLivedAccessToken($resp["access_token"]);
     }
 
     public function getUserData($accessToken)
@@ -46,9 +72,11 @@ class FacebookApiService extends BaseApiService
         $resp = $this->apiRequest()->getRequest("/me", [
             "access_token" => $accessToken
         ]);
+        $resp = $resp->json() ?? [];
         $uid = $resp["id"] ?? null;
         if (!$uid)
             abort(400, "Error getting facebook data. Try again", ["data" => $resp]);
+        print_r($resp);
         return $resp;
     }
 }

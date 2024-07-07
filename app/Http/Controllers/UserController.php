@@ -24,11 +24,9 @@ class UserController extends Controller
     public $userRepo;
     public $profileRepo;
     public $refRepo;
-    public IVerificationRepository $vrfRepo;
-    public function __construct(IUserRepository $userRepo, IUserProfileRepository $profileRepo, IReferralRepository $refRepo, IVerificationRepository $vrfRepo)
+    public function __construct(IUserRepository $userRepo, IUserProfileRepository $profileRepo, IReferralRepository $refRepo)
     {
         $this->userRepo = $userRepo;
-        $this->vrfRepo = $vrfRepo;
         $this->refRepo = $refRepo;
         $this->profileRepo = $profileRepo;
     }
@@ -36,7 +34,7 @@ class UserController extends Controller
     public function getUserDetails()
     {
         $res = $this->profileRepo->getUserDetails();
-        return ApiResponse::success("Profile fetched", $res);
+        return ApiResponse::success("User details fetched", new UserResource($res));
     }
 
     public function changeProfilePhoto(Request $request)
@@ -46,53 +44,5 @@ class UserController extends Controller
         ]);
         $resp = $this->profileRepo->changeProfilePhoto($request->file("image"));
         return ApiResponse::success("Profile photo uploaded successfully", new UserResource($resp));
-    }
-
-    public function changePin(ChangePinRequest $request)
-    {
-        $data = $request->validated();
-        if (isset($data["token"])) {
-            $vrf = $this->vrfRepo->verifyToken($data["token"], true);
-            if (!$vrf)
-                abort(400, "Invalid request");
-            if ($vrf->user->id != auth()->user()->id)
-                abort(400, "Invalid request for user");
-        }
-
-        $resp = $this->profileRepo->changePin($data);
-        Mail::to($resp->email)->queue(new PasswordChangedMail($resp, "pin"));
-        return ApiResponse::success("Pin changed succesfully", new UserResource($resp));
-    }
-
-    public function changePassword(ChangePasswordRequest $request)
-    {
-        $data = $request->validated();
-        $resp = $this->profileRepo->changePassword($data);
-        Mail::to($resp->email)->queue(new PasswordChangedMail($resp));
-        return ApiResponse::success("Password changed succesfully", new UserResource($resp));
-    }
-
-    public function changeUserTag(Request $request)
-    {
-        $data = $request->validate([
-            "tag" => ["required", "unique:users,user_tag", "max:10"]
-        ]);
-        $resp = $this->profileRepo->changeUserTag($data["tag"]);
-        return ApiResponse::success("Tag changed succesfully", new UserResource($resp));
-    }
-
-    public function getReferrals()
-    {
-        $data = $this->refRepo->getReferrals();
-        return ApiResponse::success("Referrals Fetched", $data);
-    }
-
-    public function validatePin(Request $request)
-    {
-        $data = $request->validate([
-            "pin" => ["required", "numeric", "digits:4"]
-        ]);
-        $resp = $this->profileRepo->validatePin($data);
-        return ApiResponse::success("Pin is valid", new UserResource($resp));
     }
 }

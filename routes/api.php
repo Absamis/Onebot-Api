@@ -18,7 +18,7 @@ Route::prefix("auth")->group(function () {
 Route::middleware("auth:sanctum")->group(function () {
     Route::prefix("user")->group(function () {
         Route::get("", [UserController::class, "getUserDetails"]);
-        Route::post("change-profile-photo", [UserController::class, "changeProfilePhoto"]);
+        Route::post("change-photo", [UserController::class, "changeProfilePhoto"]);
     });
 });
 
