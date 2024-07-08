@@ -28,7 +28,6 @@ class UserService
                 "data" => $data,
             ]);
         } catch (Exception $ex) {
-            echo $ex;
         }
     }
 }
