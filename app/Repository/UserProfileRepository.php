@@ -20,22 +20,35 @@ class UserProfileRepository implements IUserProfileRepository
         $this->user = auth()->user();
     }
 
-    public function getUserDetails(){
+    public function getUserDetails()
+    {
         $details = $this->user;
         return $details;
     }
 
 
-    public function changeProfilePhoto($image){
+    public function changeProfilePhoto($image)
+    {
         $prevImg = $this->user->getRawOriginal('photo');
-        if($prevImg){
-            if(Storage::disk("upl")->exists($prevImg))
+        if ($prevImg) {
+            if (Storage::disk("upl")->exists($prevImg))
                 Storage::disk("upl")->delete($prevImg);
         }
         $url = Storage::disk("upl")->put("images", $image);
         $this->user->photo = $url;
         $this->user->save();
         UserService::logActivity(ActivityLogEnums::userChangePhoto);
+        return $this->user;
+    }
+
+    public function changeEmail($user, $newEmail)
+    {
+        // Update the user's email
+        $this->user->email = $newEmail;
+        $this->user->save();
+
+        UserService::logActivity(ActivityLogEnums::userChangeEmail);
+
         return $this->user;
     }
 }

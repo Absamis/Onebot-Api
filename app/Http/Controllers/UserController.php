@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Classes\ApiResponse;
-use App\Enums\Enums\AccountEnums;
+use App\Enums\AccountEnums;
 use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\ChangePinRequest;
 use App\Http\Resources\Auth\VerificationResource;
@@ -13,6 +13,7 @@ use App\Interfaces\IReferralRepository;
 use App\Interfaces\IUserProfileRepository;
 use App\Interfaces\IUserRepository;
 use App\Mail\PasswordChangedMail;
+use App\Mail\EmailChangeVerificationMail;
 use App\Notifications\VerificationCodeNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -24,11 +25,13 @@ class UserController extends Controller
     public $userRepo;
     public $profileRepo;
     public $refRepo;
-    public function __construct(IUserRepository $userRepo, IUserProfileRepository $profileRepo, IReferralRepository $refRepo)
+    protected $vrfRepo;
+    public function __construct(IUserRepository $userRepo, IUserProfileRepository $profileRepo, IReferralRepository $refRepo, IVerificationRepository $vrfRepo)
     {
         $this->userRepo = $userRepo;
-        $this->refRepo = $refRepo;
         $this->profileRepo = $profileRepo;
+        $this->refRepo = $refRepo;
+        $this->vrfRepo = $vrfRepo;
     }
 
     public function getUserDetails()
@@ -44,5 +47,35 @@ class UserController extends Controller
         ]);
         $resp = $this->profileRepo->changeProfilePhoto($request->file("image"));
         return ApiResponse::success("Profile photo uploaded successfully", new UserResource($resp));
+    }
+    public function changeEmailRequest(Request $request)
+    {
+        $data = $request->validate([
+            'new_email' => ['required', 'email', 'unique:users,email'],
+        ]);
+        $user = auth()->user();
+        $vrf = $this->vrfRepo->getVerificationCode($user, AccountEnums::emailChangeVerificationType, $data['new_email']);
+
+        Mail::to($data['new_email'])->send(new EmailChangeVerificationMail($vrf->token));
+
+        return ApiResponse::success('Verification code sent to new email');
+    }
+    public function verifyEmailChange(Request $request)
+    {
+        $data = $request->validate([
+            'code' => ['required'],
+        ]);
+
+        $user = auth()->user();
+        $vrf = $this->vrfRepo->verifyToken($data['code'], AccountEnums::emailChangeVerificationType);
+
+        if (!$vrf || $vrf->user_id != $user->id) {
+            abort(400, 'Invalid verification code');
+        }
+
+        $newEmail = $vrf->payload['new_email'];
+        $resp = $this->profileRepo->changeEmail($user, $newEmail);
+
+        return ApiResponse::success('Email changed successfully', new UserResource($resp));
     }
 }

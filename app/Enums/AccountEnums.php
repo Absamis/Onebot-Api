@@ -10,6 +10,7 @@ enum AccountEnums
     const pinVerificationType = "pin";
     const resetPasswordVerificationType = "reset-password";
     const resetPinVerificationType = "reset-pin";
+    const emailChangeVerificationType = "email-change";
 
     const unverifiedAccount = 0;
     const verifiedAccount = 1;
