@@ -16,16 +16,13 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger("userid");
             $table->string("name");
+            $table->string("category")->nullable();
+            $table->string("company_url")->nullable();
             $table->string("type")->nullable();
-            $table->string("photo")->nullable();
-            $table->string("description")->nullable();
-            $table->string("account_app_id")->unique();
-            $table->text("token")->nullable();
-            $table->text("refresh_token")->nullable();
-            $table->string("token_expires_in")->nullable();
+            $table->text("description")->nullable();
             $table->integer("status")->default(AppEnums::active);
             $table->timestamps();
-            $table->foreign("userid")->references("id")->on("users")->cascadeOnDelete();
+            $table->foreign("userid")->references("id")->on("users")->restrictOnDelete();
         });
     }
 

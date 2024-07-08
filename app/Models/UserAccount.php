@@ -11,13 +11,20 @@ class UserAccount extends Model
     use HasFactory;
 
 
+    protected $fillable = [
+        "userid",
+        "account_id",
+        "role_id",
+        "status",
+    ];
+
     public function account()
     {
-        return $this->hasOne(Account::class, "account_id");
+        return $this->belongsTo(Account::class, "account_id");
     }
 
     public function role()
     {
-        return $this->hasOne(Role::class, "role_id");
+        return $this->belongsTo(Role::class, "role_id");
     }
 }

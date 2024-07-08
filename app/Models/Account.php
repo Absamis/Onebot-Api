@@ -12,33 +12,15 @@ class Account extends Model
     protected $fillable = [
         "userid",
         "name",
-        "type",
-        "photo",
+        "category",
+        "company_url",
         "description",
-        "account_app_id",
-        "token",
-        "refresh_token",
-        "token_expires_in",
-        "status",
+        "type",
+        "status"
     ];
-
-    protected $hidden = [
-        "token",
-        "refresh_token",
-        "token_expires_in"
-    ];
-
-    protected function casts()
-    {
-        return [
-            "token" => "encrypted:object",
-            "refresh_token" => "encrypted:object",
-        ];
-    }
 
     public function user()
     {
         return $this->belongsTo(User::class, "userid");
     }
-
 }

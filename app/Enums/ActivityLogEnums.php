@@ -8,9 +8,12 @@ enum ActivityLogEnums
     const userSigin = "user-sigin";
     const userChangePhoto = "change-photo";
 
+    const accountCreated = "account-created";
+
 
     const logMessages = [
-        "user-sigin" => "Signed in",
-        "change-photo" => "Profile photo updated"
+        self::userSigin => "Signed in",
+        self::userChangePhoto => "Profile photo updated",
+        self::accountCreated => "New account created"
     ];
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Auth\SigninController;
 use App\Http\Controllers\Auth\SignupController;
 use Illuminate\Http\Request;
@@ -22,6 +23,7 @@ Route::middleware("auth:sanctum")->group(function () {
         Route::get("", [UserController::class, "getUserDetails"]);
         Route::post("change-photo", [UserController::class, "changeProfilePhoto"]);
     });
+    Route::post("accounts", [AccountController::class, "addAccount"]);
 });
 
 Route::prefix("configs")->group(function () {
