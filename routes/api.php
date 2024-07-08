@@ -25,14 +25,11 @@ Route::middleware("auth:sanctum")->group(function () {
     Route::prefix("user")->group(function () {
         Route::get("", [UserController::class, "getUserDetails"]);
         Route::post("change-photo", [UserController::class, "changeProfilePhoto"]);
-<<<<<<< HEAD
     });
     Route::post("accounts", [AccountController::class, "addAccount"]);
-=======
         Route::post('change-email-request', [UserController::class, 'changeEmailRequest']);
         Route::post('verify-email', [UserController::class, 'verifyEmailChange']);
     });
->>>>>>> 7862c7be09181960530f514252b8fff7d0eb6eca
 });
 
 Route::prefix("configs")->group(function () {
