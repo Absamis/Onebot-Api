@@ -2,9 +2,10 @@
 
 namespace App\Repository\Auth;
 
+use App\Enums\AccountEnums;
 use App\Enums\AppEnums;
 use App\Interfaces\Auth\IVerificationRepository;
-use App\Models\Models\Verification;
+use App\Models\Verification;
 use App\Models\User;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
@@ -67,15 +68,16 @@ class VerificationRepository implements IVerificationRepository
         return $vrf;
     }
 
-    // public function verifyCode($code, $type)
-    // {
-    //     $vrf = Verification::active()->where(["code" => Crypt::encrypt($code), "verification_type" => $type])->first();
-    //     if (!$vrf) {
-    //         abort(400, "Invalid request");
-    //     }
-    //     $vrf = $this->invalidateToken($vrf);
-    //     return $vrf;
-    // }
+    public function verifyEmailChangeCode($code)
+    {
+        $vrf = Verification::active()->where(["userid" => auth()->user()->id, "verification_type" => AccountEnums::emailChangeVerificationType])->first();
+        if (!$vrf)
+            abort(400, "Invalid request");
+        if ($code != $vrf->plainCode)
+            abort(400, "Incorrect code");
+        //$vrf = $this->invalidateToken($vrf);
+        return $vrf;
+    }
 
     private function invalidateToken($vrf)
     {
