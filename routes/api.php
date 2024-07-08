@@ -5,9 +5,6 @@ use App\Http\Controllers\Auth\SigninController;
 use App\Http\Controllers\Auth\SignupController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-// use App\Http\Controllers\Configurations\AccountOptionController;
-// use App\Http\Controllers\Configurations\RoleController;
-// use App\Http\Controllers\Configurations\SigninOptionController;
 use App\Http\Controllers\ConfigurationsController;
 use App\Http\Controllers\UserController;
 
@@ -24,9 +21,8 @@ Route::middleware("auth:sanctum")->group(function () {
         Route::post("change-photo", [UserController::class, "changeProfilePhoto"]);
     });
     Route::post("accounts", [AccountController::class, "addAccount"]);
-        Route::post('change-email-request', [UserController::class, 'changeEmailRequest']);
-        Route::post('verify-email', [UserController::class, 'verifyEmailChange']);
-    });
+    Route::post('change-email-request', [UserController::class, 'changeEmailRequest']);
+    Route::post('verify-email', [UserController::class, 'verifyEmailChange']);
 });
 
 Route::prefix("configs")->group(function () {

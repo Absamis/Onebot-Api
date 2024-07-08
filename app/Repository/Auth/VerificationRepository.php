@@ -4,10 +4,9 @@ namespace App\Repository\Auth;
 
 use App\Enums\AppEnums;
 use App\Interfaces\Auth\IVerificationRepository;
+use App\Models\Models\Verification;
 use App\Models\User;
-use App\Models\Verification;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class VerificationRepository implements IVerificationRepository
