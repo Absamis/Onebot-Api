@@ -1,9 +1,6 @@
 <?php
 
-<<<<<<< HEAD
 use App\Http\Controllers\AccountController;
-=======
->>>>>>> 7862c7be09181960530f514252b8fff7d0eb6eca
 use App\Http\Controllers\Auth\SigninController;
 use App\Http\Controllers\Auth\SignupController;
 use Illuminate\Http\Request;
