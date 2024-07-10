@@ -16,13 +16,23 @@ Route::prefix("auth")->group(function () {
 });
 
 Route::middleware("auth:sanctum")->group(function () {
+    Route::get("invitation/{token}/accept", [AccountController::class, "acceptInvite"]);
+
     Route::prefix("user")->group(function () {
+        Route::post('change-email-request', [UserController::class, 'changeEmailRequest']);
+        Route::post('verify-email', [UserController::class, 'verifyEmailChange']);
         Route::get("", [UserController::class, "getUserDetails"]);
         Route::post("change-photo", [UserController::class, "changeProfilePhoto"]);
     });
     Route::post("accounts", [AccountController::class, "addAccount"]);
-    Route::post('change-email-request', [UserController::class, 'changeEmailRequest']);
-    Route::post('verify-email', [UserController::class, 'verifyEmailChange']);
+
+    Route::prefix("accounts/{account}")->group(function () {
+        Route::get("", [AccountController::class, "getAccountDetails"]);
+        Route::put("", [AccountController::class, "updateAccount"]);
+        Route::post("invite", [AccountController::class, "inviteUser"]);
+        Route::delete("members/{member}", [AccountController::class, "removeAccountMember"]);
+        Route::put("members/{member}/change-role", [AccountController::class, "changeMemberRole"]);
+    });
 });
 
 Route::prefix("configs")->group(function () {

@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Models\Account;
+use Illuminate\Auth\RequestGuard;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class MacroServiceProvider extends ServiceProvider
@@ -22,9 +24,8 @@ class MacroServiceProvider extends ServiceProvider
     public function boot(): void
     {
         //
-        Auth::macro("account", function () {
-            $acid = request("account_id");
-            $account = Account::find($acid);
+        RequestGuard::macro("account", function () {
+            $account = request("account");
             return $account;
         });
     }

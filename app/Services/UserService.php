@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\ActivityLogEnums;
 use App\Models\ActivityLog;
+use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 
@@ -29,5 +30,10 @@ class UserService
             ]);
         } catch (Exception $ex) {
         }
+    }
+
+    public static function getUser($uid)
+    {
+        return User::where("email", $uid)->orWhere("id", $uid)->first();
     }
 }
