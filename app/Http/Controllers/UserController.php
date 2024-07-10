@@ -57,8 +57,8 @@ class UserController extends Controller
         $user = auth()->user();
         $vrf = $this->vrfRepo->getVerificationCode($user, AccountEnums::emailChangeVerificationType, $data['new_email']);
 
-        Mail::to($data['new_email'])->send(new EmailChangeVerificationMail($vrf->token));
-
+        $user->email = $data["new_email"];
+        Notification::send($user, new VerificationCodeNotification($vrf));
         return ApiResponse::success('Verification code sent to new email');
     }
     public function verifyEmailChange(Request $request)
@@ -68,15 +68,9 @@ class UserController extends Controller
         ]);
 
         $user = auth()->user();
-        $vrf = $this->vrfRepo->verifyToken($data['code'], AccountEnums::emailChangeVerificationType);
-
-        if (!$vrf || $vrf->user_id != $user->id) {
-            abort(400, 'Invalid verification code');
-        }
-
-        $newEmail = $vrf->payload['new_email'];
+        $vrf = $this->vrfRepo->verifyEmailChangeCode($data['code']);
+        $newEmail = $vrf->data;
         $resp = $this->profileRepo->changeEmail($user, $newEmail);
-
         return ApiResponse::success('Email changed successfully', new UserResource($resp));
     }
 }

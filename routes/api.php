@@ -5,9 +5,6 @@ use App\Http\Controllers\Auth\SigninController;
 use App\Http\Controllers\Auth\SignupController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-// use App\Http\Controllers\Configurations\AccountOptionController;
-// use App\Http\Controllers\Configurations\RoleController;
-// use App\Http\Controllers\Configurations\SigninOptionController;
 use App\Http\Controllers\ConfigurationsController;
 use App\Http\Controllers\UserController;
 
@@ -19,13 +16,22 @@ Route::prefix("auth")->group(function () {
 });
 
 Route::middleware("auth:sanctum")->group(function () {
+    Route::get("invitation/{token}/accept", [AccountController::class, "acceptInvite"]);
+
     Route::prefix("user")->group(function () {
+        Route::post('change-email-request', [UserController::class, 'changeEmailRequest']);
+        Route::post('verify-email', [UserController::class, 'verifyEmailChange']);
         Route::get("", [UserController::class, "getUserDetails"]);
         Route::post("change-photo", [UserController::class, "changeProfilePhoto"]);
     });
     Route::post("accounts", [AccountController::class, "addAccount"]);
-        Route::post('change-email-request', [UserController::class, 'changeEmailRequest']);
-        Route::post('verify-email', [UserController::class, 'verifyEmailChange']);
+
+    Route::prefix("accounts/{account}")->group(function () {
+        Route::get("", [AccountController::class, "getAccountDetails"]);
+        Route::put("", [AccountController::class, "updateAccount"]);
+        Route::post("invite", [AccountController::class, "inviteUser"]);
+        Route::delete("members/{member}", [AccountController::class, "removeAccountMember"]);
+        Route::put("members/{member}/change-role", [AccountController::class, "changeMemberRole"]);
     });
 });
 

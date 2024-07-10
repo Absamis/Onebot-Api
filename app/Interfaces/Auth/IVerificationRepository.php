@@ -13,4 +13,5 @@ interface IVerificationRepository
     public function resendVerificationCode($token);
     public function verifyResendToken($token);
     public function setVerificationData(User $user, $type,  $code = null, $data = null);
+    public function verifyEmailChangeCode($code);
 }

@@ -20,29 +20,17 @@ class UserProfileRepository implements IUserProfileRepository
         $this->user = auth()->user();
     }
 
-<<<<<<< HEAD
-    public function getUserDetails(){
-=======
     public function getUserDetails()
     {
->>>>>>> 7862c7be09181960530f514252b8fff7d0eb6eca
         $details = $this->user;
         return $details;
     }
 
 
-<<<<<<< HEAD
     public function changeProfilePhoto($image){
-        $prevImg = $this->user->getRawOriginal('photo');
-        if($prevImg){
-            if(Storage::disk("upl")->exists($prevImg))
-=======
-    public function changeProfilePhoto($image)
-    {
         $prevImg = $this->user->getRawOriginal('photo');
         if ($prevImg) {
             if (Storage::disk("upl")->exists($prevImg))
->>>>>>> 7862c7be09181960530f514252b8fff7d0eb6eca
                 Storage::disk("upl")->delete($prevImg);
         }
         $url = Storage::disk("upl")->put("images", $image);
@@ -51,18 +39,18 @@ class UserProfileRepository implements IUserProfileRepository
         UserService::logActivity(ActivityLogEnums::userChangePhoto);
         return $this->user;
     }
-<<<<<<< HEAD
-=======
 
     public function changeEmail($user, $newEmail)
     {
         // Update the user's email
+        $oldEmail = $this->user->email;
         $this->user->email = $newEmail;
         $this->user->save();
-
-        UserService::logActivity(ActivityLogEnums::userChangeEmail);
+        UserService::logActivity(ActivityLogEnums::userChangeEmail, [
+            "oldEmail" => $oldEmail,
+            "new_email" => $newEmail
+        ]);
 
         return $this->user;
     }
->>>>>>> 7862c7be09181960530f514252b8fff7d0eb6eca
 }

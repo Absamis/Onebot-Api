@@ -27,6 +27,9 @@ return [
     'resend' => [
         'key' => env('RESEND_KEY'),
     ],
+    'utils' => [
+        'invitiation_active_days' => env("INVITATION_ACTIVE_DAYS")
+    ],
     'facebook' => [
         'api_url' => env("FACEBOOK_API_URL"),
         'app_id' => env("FACEBOOK_APP_ID"),
