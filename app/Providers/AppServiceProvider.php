@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Event;
 use App\Http\Middleware\Authenticate as MiddlewareAuthenticate;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Support\ServiceProvider;
+use App\Interfaces\Auth\IVerificationRepository;
+use App\Repository\Auth\VerificationRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
     {
         //
         $this->app->bind(Authenticate::class, MiddlewareAuthenticate::class);
+        $this->app->bind(IVerificationRepository::class, VerificationRepository::class);
     }
 
     /**

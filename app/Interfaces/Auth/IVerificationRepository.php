@@ -8,7 +8,7 @@ interface IVerificationRepository
 {
     //
     public function getVerificationCode(User $user, $type = null, $data = null);
-    public function verifyToken($token, $invalidate = false);
+    public function verifyToken($token, $type, $invalidate = false);
     public function verifyCode($code, $token);
     public function resendVerificationCode($token);
     public function verifyResendToken($token);

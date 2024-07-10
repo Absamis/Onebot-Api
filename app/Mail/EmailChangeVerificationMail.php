@@ -13,21 +13,14 @@ class EmailChangeVerificationMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $verificationToken;
+    public $verificationCode;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($verificationToken)
+    public function __construct($verificationCode)
     {
-        $this->verificationToken = $verificationToken;
-    }
-
-    public function build()
-    {
-        return $this->subject('Email Change Verification')->view('emails.email-change-verification', [
-            'token' => $this->verificationToken,
-        ]);
+        $this->verificationCode = $verificationCode;
     }
 
     /**
@@ -46,7 +39,10 @@ class EmailChangeVerificationMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            markdown: 'emails.email-change-verification',
+            with: [
+                'code' => $this->verificationCode,
+            ],
         );
     }
 
