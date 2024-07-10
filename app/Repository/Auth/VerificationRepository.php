@@ -78,21 +78,16 @@ class VerificationRepository implements IVerificationRepository
 
     public function verifyCode($code, $token)
     {
-        $vrf = $this->verifyToken($token, AccountEnums::emailChangeVerificationType, true);
+        $vrf = $this->verifyToken($token, AccountEnums::emailChangeVerificationType);
 
         if (!$vrf) {
             abort(400, "Invalid token");
         }
 
-        try {
-            $decryptedCode = Crypt::decrypt($vrf->code);
-        } catch (\Exception $e) {
-            abort(400, "Failed to decrypt code");
-        }
-
-        if ($code != $decryptedCode) {
+        if ($code != $vrf->plainCode) {
             abort(400, "Incorrect code");
         }
+        $vrf = $this->invalidateToken($vrf);
         return $vrf;
     }
 
@@ -103,7 +98,6 @@ class VerificationRepository implements IVerificationRepository
             abort(400, "Invalid request");
         if ($code != $vrf->plainCode)
             abort(400, "Incorrect code");
-        //$vrf = $this->invalidateToken($vrf);
         return $vrf;
     }
 

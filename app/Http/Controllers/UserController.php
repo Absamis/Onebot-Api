@@ -65,7 +65,7 @@ class UserController extends Controller
         //     'encrypted_code' => $vrf->code,
         // ]);
         $decryptedCode = Crypt::decrypt($vrf->code);
-        Mail::to($data['new_email'])->send(new EmailChangeVerificationMail($decryptedCode));
+        Mail::to($data['new_email'])->queue(new EmailChangeVerificationMail($decryptedCode));
 
         return ApiResponse::success('Verification code sent to new email', new VerificationResource($vrf));
     }
