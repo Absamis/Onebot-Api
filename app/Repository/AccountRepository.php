@@ -138,7 +138,7 @@ class AccountRepository implements IAccountRepository
     private function isUserOnAccount(Account $account, $uid)
     {
         if (!$uid) return false;
-        $check = UserAccount::where(["userid" => $user->id, "account_id" => $account->id])->first();
+        $check = UserAccount::where(["userid" => $uid, "account_id" => $account->id])->first();
         return $check ? true : false;
     }
 

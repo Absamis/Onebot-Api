@@ -18,6 +18,9 @@ use App\Notifications\VerificationCodeNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Crypt;
+
 
 class UserController extends Controller
 {
@@ -56,19 +59,28 @@ class UserController extends Controller
         ]);
         $user = auth()->user();
         $vrf = $this->vrfRepo->getVerificationCode($user, AccountEnums::emailChangeVerificationType, $data['new_email']);
+        // Log::info('Verification code', [
+        //     'token' => $vrf->token,
+        //     'new_email' => $data['new_email'],
+        //     'encrypted_code' => $vrf->code,
+        // ]);
+        $decryptedCode = Crypt::decrypt($vrf->code);
+        Mail::to($data['new_email'])->send(new EmailChangeVerificationMail($decryptedCode));
 
-        $user->email = $data["new_email"];
-        Notification::send($user, new VerificationCodeNotification($vrf));
-        return ApiResponse::success('Verification code sent to new email');
+        return ApiResponse::success('Verification code sent to new email', new VerificationResource($vrf));
     }
+
     public function verifyEmailChange(Request $request)
     {
         $data = $request->validate([
-            'code' => ['required'],
+            'token' => ['required'],
+            'code' => ['required', 'numeric'],
         ]);
 
         $user = auth()->user();
-        $vrf = $this->vrfRepo->verifyEmailChangeCode($data['code']);
+        $token = $data['token'];
+        $code = $data['code'];
+        $vrf = $this->vrfRepo->verifyCode($code, $token);
         $newEmail = $vrf->data;
         $resp = $this->profileRepo->changeEmail($user, $newEmail);
         return ApiResponse::success('Email changed successfully', new UserResource($resp));

@@ -3,7 +3,7 @@
     <p>
         Please use the following verification code to verify your email address:
         <br>
-        <strong>Verification Code:</strong> {{ $token }}
+        <strong>Verification Code:</strong> {{ $code }}
     </p>
     <p>
         If you did not request this change, please ignore this email.

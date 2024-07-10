@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Crypt;
 
 class Verification extends Model
 {
-    use StatusScope;
+    use HasFactory, StatusScope;
     protected $fillable = [
         "userid",
         "verification_type",

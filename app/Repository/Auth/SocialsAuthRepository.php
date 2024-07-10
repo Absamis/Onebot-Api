@@ -106,7 +106,7 @@ class SocialsAuthRepository implements ISocialsAuthRepository
         $token = $user->createToken(getClientIP() . $user->id . "token")->plainTextToken;
         $user->access_token = $token;
         Auth::login($user);
-        UserService::logActivity(ActivityLogEnums::userSigin, [
+        UserService::logActivity(ActivityLogEnums::userSignin, [
             "location" => getClientIP(),
             "time" => now()->toDateTime()
         ]);

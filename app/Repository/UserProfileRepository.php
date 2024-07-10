@@ -27,7 +27,8 @@ class UserProfileRepository implements IUserProfileRepository
     }
 
 
-    public function changeProfilePhoto($image){
+    public function changeProfilePhoto($image)
+    {
         $prevImg = $this->user->getRawOriginal('photo');
         if ($prevImg) {
             if (Storage::disk("upl")->exists($prevImg))
