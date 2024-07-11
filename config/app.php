@@ -2,6 +2,7 @@
 
 return [
 
+    'token_expiration_minutes' => env('TOKEN_EXPIRATION_MINUTES', 15),
     /*
     |--------------------------------------------------------------------------
     | Application Name

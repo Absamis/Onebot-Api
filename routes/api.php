@@ -21,6 +21,7 @@ Route::middleware("auth:sanctum")->group(function () {
     Route::prefix("user")->group(function () {
         Route::post('change-email-request', [UserController::class, 'changeEmailRequest']);
         Route::post('verify-email', [UserController::class, 'verifyEmailChange']);
+        Route::post("resend-verification-code", [UserController::class, "resendVerificationCode"]);
         Route::get("", [UserController::class, "getUserDetails"]);
         Route::post("change-photo", [UserController::class, "changeProfilePhoto"]);
     });

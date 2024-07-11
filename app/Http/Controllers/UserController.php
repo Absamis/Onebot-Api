@@ -85,4 +85,19 @@ class UserController extends Controller
         $resp = $this->profileRepo->changeEmail($user, $newEmail);
         return ApiResponse::success('Email changed successfully', new UserResource($resp));
     }
+
+    public function resendVerificationCode(Request $request)
+    {
+        $data = $request->validate([
+            'token' => ['required']
+        ]);
+
+        $user = auth()->user();
+        $vrf = $this->vrfRepo->resendVerificationCode($data['token']);
+
+        $decryptedCode = Crypt::decrypt($vrf->code);
+        Mail::to($user->email)->queue(new EmailChangeVerificationMail($decryptedCode));
+
+        return ApiResponse::success('Verification code resent to your email', new VerificationResource($vrf));
+    }
 }

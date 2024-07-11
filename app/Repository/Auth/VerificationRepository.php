@@ -72,7 +72,10 @@ class VerificationRepository implements IVerificationRepository
 
     public function verifyResendToken($token)
     {
-        $vrf = Verification::active()->where(["refresh_token" => $token])->first();
+        $vrf = Verification::where([
+            'refresh_token' => $token,
+            'status' => AppEnums::active
+        ])->first();
         return $vrf;
     }
 
@@ -113,9 +116,10 @@ class VerificationRepository implements IVerificationRepository
     public function resendVerificationCode($token)
     {
         $vrf = $this->verifyResendToken($token);
-        if (!$vrf)
+        if (!$vrf) {
             abort(400, "Invalid request");
-        $dt = $this->getVerificationCode($vrf->user, $vrf->verification_type);
-        return $dt;
+        }
+        $newVrf = $this->getVerificationCode($vrf->user, $vrf->verification_type, $vrf->data);
+        return $newVrf;
     }
 }
