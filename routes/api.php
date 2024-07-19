@@ -3,6 +3,8 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Auth\SigninController;
 use App\Http\Controllers\Auth\SignupController;
+use App\Http\Controllers\Channels\ChannelController;
+use App\Http\Controllers\Channels\FacebookChannelController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ConfigurationsController;
@@ -33,6 +35,9 @@ Route::middleware("auth:sanctum")->group(function () {
         Route::post("invite", [AccountController::class, "inviteUser"]);
         Route::delete("members/{member}", [AccountController::class, "removeAccountMember"]);
         Route::put("members/{member}/change-role", [AccountController::class, "changeMemberRole"]);
+
+        Route::get("get-credentials/channels/{option}", [ChannelController::class, "getChannelsCredential"]);
+        Route::post("add-channel/{option}", [ChannelController::class, "addChannel"]);
     });
 });
 
@@ -40,4 +45,9 @@ Route::prefix("configs")->group(function () {
     Route::get('/account-options', [ConfigurationsController::class, 'getAccountOptions']);
     Route::get('/roles', [ConfigurationsController::class, 'getRoles']);
     Route::get('/signin-options', [ConfigurationsController::class, 'getSigninOptions']);
+});
+
+
+Route::prefix("webhooks/callback")->group(function () {
+    Route::match(["get", "post"], "facebook", [FacebookChannelController::class, "webhook"]);
 });

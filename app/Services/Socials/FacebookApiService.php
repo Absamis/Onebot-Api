@@ -3,12 +3,26 @@
 namespace App\Services\Socials;
 
 use App\DTOs\SignupDataDto;
+use App\DTOs\SocialAppCredentials;
 use App\Enums\FacebookScopesEnums;
 use App\Services\BaseApiService;
 use Illuminate\Support\Facades\Cache;
 
 class FacebookApiService extends BaseApiService
 {
+
+    public function getCredentials($scopes = null)
+    {
+        return new SocialAppCredentials(
+            app_id: config("services.facebook.app_id"),
+            app_key: null,
+            app_secret: null,
+            token: null,
+            scopes: $scopes,
+            state: generateLoginState(),
+            url: null
+        );
+    }
 
     public function getLoginUrl($redirect_url, $force = false)
     {

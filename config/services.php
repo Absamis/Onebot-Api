@@ -35,7 +35,8 @@ return [
         'app_id' => env("FACEBOOK_APP_ID"),
         'app_secret' => env("FACEBOOK_APP_SECRET"),
         'api_version' => env("FACEBOOK_API_VERSION"),
-        'config_id' => env("FACEBOOK_CONFIG_ID")
+        'config_id' => env("FACEBOOK_CONFIG_ID"),
+        'webhook_verify_token' => env("FACEBOOK_WEBHOOK_VERIFY_TOKEN")
     ],
     'google' => [
         'api_url' => env("GOOGLE_API_URL"),

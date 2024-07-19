@@ -37,10 +37,18 @@ if (!function_exists("getClientUserAgent")) {
     }
 }
 
+if (!function_exists("generateLoginState")) {
+    function generateLoginState()
+    {
+        $loginState = uniqid(mt_rand(100, 999));
+        return $loginState;
+    }
+}
+
 if (!function_exists("setLoginState")) {
     function setLoginState($suffix)
     {
-        $loginState = uniqid(mt_rand(100, 999));
+        $loginState = generateLoginState();
         Cache::put(getClientIP() . $suffix, $loginState, 300);
         return $loginState;
     }

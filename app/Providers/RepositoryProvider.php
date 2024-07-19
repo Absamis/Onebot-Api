@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Interfaces\Auth\ISocialsAuthRepository;
 use App\Interfaces\Auth\IVerificationRepository;
+use App\Interfaces\Channels\IChannelsRepository;
 use App\Interfaces\IAccountRepository;
 use App\Interfaces\IReferralRepository;
 use App\Interfaces\IUserProfileRepository;
@@ -11,6 +12,7 @@ use App\Interfaces\IUserRepository;
 use App\Repository\AccountRepository;
 use App\Repository\Auth\SocialsAuthRepository;
 use App\Repository\Auth\VerificationRepository;
+use App\Repository\Channels\ChannelsRepository;
 use App\Repository\ReferralRepository;
 use App\Repository\UserProfileRepository;
 use App\Repository\UserRepository;
@@ -39,6 +41,7 @@ class RepositoryProvider extends ServiceProvider
         $this->app->bind(IReferralRepository::class, ReferralRepository::class);
         $this->app->bind(IAccountRepository::class, AccountRepository::class);
         $this->app->bind(IVerificationRepository::class, VerificationRepository::class);
+        $this->app->bind(IChannelsRepository::class, ChannelsRepository::class);
 
         $this->app->bind(ISocialsAuthRepository::class, SocialsAuthRepository::class);
         $this->app->bind(FacebookApiService::class, function () {

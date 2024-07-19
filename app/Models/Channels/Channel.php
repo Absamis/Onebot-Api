@@ -10,13 +10,21 @@ class Channel extends Model
     use HasFactory;
 
 
-    protected $fillable = [];
-
-    protected $hidden = [
+    protected $fillable = [
+        "account_id",
+        "name",
+        "type",
+        "photo",
+        "description",
+        "channel_app_id",
         "token",
         "refresh_token",
-        "token_expires_in"
+        "token_expires_in",
+        "permissions",
+        "status",
     ];
+
+    protected $hidden = ["token", "refresh_token", "permissions"];
 
     protected function casts()
     {

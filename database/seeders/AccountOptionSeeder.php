@@ -16,7 +16,7 @@ class AccountOptionSeeder extends Seeder
         //
         AccountOption::create([
             "name" => "Facebook",
-            "code" => "fb_msg"
+            "code" => "fb"
         ]);
 
         AccountOption::create([
