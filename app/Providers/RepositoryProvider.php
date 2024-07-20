@@ -19,6 +19,7 @@ use App\Repository\ReferralRepository;
 use App\Repository\UserProfileRepository;
 use App\Repository\UserRepository;
 use App\Services\Socials\FacebookApiService;
+use App\Services\Socials\InstagramApiService;
 use App\Services\Socials\GoogleService;
 use Illuminate\Support\ServiceProvider;
 
@@ -52,6 +53,9 @@ class RepositoryProvider extends ServiceProvider
         });
         $this->app->bind(GoogleService::class, function () {
             return new GoogleService(config("services.google.api_url"), "", config("services.google.client_id"), config("services.google.client_secret"));
+        });
+        $this->app->bind(InstagramApiService::class, function () {
+            return new InstagramApiService(config("services.instagram.api_url"), "", config("services.instagram.app_id"), config("services.instagram.app_secret"));
         });
     }
 }
