@@ -49,4 +49,10 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'instagram' => [
+        'api_url' => env("INSTAGRAM_API_URL", "https://graph.facebook.com/v20.0"),
+        'app_id' => env("INSTAGRAM_APP_ID"),
+        'app_secret' => env("INSTAGRAM_APP_SECRET"),
+        'config_id' => env("INSTAGRAM_CONFIG_ID"),
+    ]
 ];
