@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Auth\SigninController;
 use App\Http\Controllers\Auth\SignupController;
 use App\Http\Controllers\Channels\ChannelController;
+use App\Http\Controllers\Channels\ConversationController;
 use App\Http\Controllers\Channels\FacebookChannelController;
 use App\Http\Controllers\Channels\InstagramChannelController;
 use Illuminate\Http\Request;
@@ -39,6 +40,15 @@ Route::middleware("auth:sanctum")->group(function () {
 
         Route::get("get-credentials/channels/{option}", [ChannelController::class, "getChannelsCredential"]);
         Route::post("add-channel/{option}", [ChannelController::class, "addChannel"]);
+
+        Route::get("channels/{channel?}", [ChannelController::class, "getChannels"]);
+        Route::prefix("channels/{channel}")->group(function () {
+            Route::delete("", [ChannelController::class, "removeChannel"]);
+        });
+
+        Route::prefix("conversations/{contact}")->group(function () {
+            Route::post("assign-user", [ConversationController::class, "assignUser"]);
+        });
     });
 });
 
