@@ -2,11 +2,13 @@
 
 namespace App\Repository\Channels;
 
+use App\Enums\ActivityLogEnums;
 use App\Enums\FacebookScopesEnums;
 use App\Interfaces\Channels\IChannelsRepository;
 use App\Models\Channels\Channel;
 use App\Models\Configurations\AccountOption;
 use App\Services\Socials\FacebookApiService;
+use App\Services\UserService;
 use Illuminate\Support\Facades\Auth;
 
 class ChannelsRepository implements IChannelsRepository
@@ -47,6 +49,25 @@ class ChannelsRepository implements IChannelsRepository
             "channel_app_id" => $data["channel_app_id"],
             "account_id" => $data["account_id"]
         ], $data);
+        UserService::logActivity(ActivityLogEnums::addedChannel, [
+            "channel id" => $channel->id
+        ]);
         return $channel;
+    }
+
+    public function getChannels(Channel $channel = null)
+    {
+        $data = Channel::where("account_id", Auth::account()->id)->get();
+        return $data;
+    }
+
+    public function removeChannel(Channel $channel)
+    {
+        $channel->delete();
+        UserService::logActivity(ActivityLogEnums::deletedChannel, [
+            "channel_name" => $channel->name,
+            "channel_type" => "fb",
+        ]);
+        return true;
     }
 }
