@@ -72,7 +72,8 @@ class ChannelsRepository implements IChannelsRepository
         $channel->delete();
         UserService::logActivity(ActivityLogEnums::deletedChannel, [
             "channel_name" => $channel->name,
-            "channel_type" => "fb",
+            "channel_type" => $channel->type,
+            "channel_app_id" => $channel->channel_app_id,
         ]);
         return true;
     }
