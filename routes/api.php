@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\SignupController;
 use App\Http\Controllers\Channels\ChannelController;
 use App\Http\Controllers\Channels\ConversationController;
 use App\Http\Controllers\Channels\FacebookChannelController;
+use App\Http\Controllers\Channels\InstagramChannelController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ConfigurationsController;
@@ -60,4 +61,5 @@ Route::prefix("configs")->group(function () {
 
 Route::prefix("webhooks/callback")->group(function () {
     Route::match(["get", "post"], "facebook", [FacebookChannelController::class, "webhook"]);
+    Route::match(["get", "post"], "instagram", [InstagramChannelController::class, "webhook"]);
 });
