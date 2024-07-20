@@ -67,7 +67,7 @@ class ChannelsRepository implements IChannelsRepository
         UserService::logActivity(ActivityLogEnums::deletedChannel, [
             "channel_name" => $channel->name,
             "channel_type" => $channel->type,
-            "channel_app_id" => $channel->channel_app_id
+            "channel_app_id" => $channel->channel_app_id,
         ]);
         return true;
     }
