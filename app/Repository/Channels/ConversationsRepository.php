@@ -32,4 +32,12 @@ class ConversationsRepository implements IConversationsRepository
         ]);
         return $contact;
     }
+
+
+    public function changeStatus(Contact $contact, $status)
+    {
+        $contact->conversation_status = $status;
+        $contact->save();
+        return $contact;
+    }
 }

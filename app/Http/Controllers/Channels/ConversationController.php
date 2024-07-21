@@ -26,4 +26,11 @@ class ConversationController extends Controller
         $response = $this->conversationRepo->assignUser($contact, $user);
         return ApiResponse::success("Conversation assigned", $response);
     }
+
+    public function changeStatus(Request $request, Contact $contact)
+    {
+        $data = $request->validate(["status" => ["required"]]);
+        $response = $this->conversationRepo->changeStatus($contact, $data["status"]);
+        return ApiResponse::success("Conversation status changed", $response);
+    }
 }
