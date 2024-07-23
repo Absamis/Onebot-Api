@@ -11,6 +11,14 @@ class FacebookChannelController extends Controller
     //
     public function webhook(Request $request)
     {
-        Storage::put("fbhook", json_encode($request->all()));
+        $mode = $request->input("hub_mode");
+        $verifyToken = $request->input("hub_verify_token");
+        $challenge = $request->input("hub_challenge");
+
+        if ($mode != "subscribe")
+        abort(400, "Invalid mode");
+        if ($verifyToken != config("services.facebook.webhook_verify_token"))
+        abort(400, "Invalid verify token");
+        return $challenge;
     }
 }

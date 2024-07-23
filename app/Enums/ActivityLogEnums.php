@@ -13,6 +13,7 @@ enum ActivityLogEnums
     const invitedMember = "invited-member";
     const deletedMember = "delete-member";
     const assignedConversation = "assigned-conversation";
+    const conversationStatusChanged = "conv-status-changed";
     const addedChannel = "added-channel";
     const deletedChannel = "deleted-channel";
 
@@ -27,6 +28,7 @@ enum ActivityLogEnums
         self::deletedMember => "Deleted a memeber of the account",
         self::assignedConversation => "Assigned converation to a user",
         self::addedChannel => "Added channel to account",
-        self::deletedChannel => "Deleted a channel"
+        self::deletedChannel => "Deleted a channel",
+        self::conversationStatusChanged => "Changed the status of the conversation"
     ];
 }

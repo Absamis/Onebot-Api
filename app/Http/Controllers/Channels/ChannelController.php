@@ -27,7 +27,6 @@ class ChannelController extends Controller
         return ApiResponse::success("Credentials fetched", $response);
     }
 
-
     public function addChannel(AddChannelRequest $request, Account $account, AccountOption $option)
     {
         $response = $this->channelsRepo->addChannel($option, $request->validated());
@@ -37,8 +36,10 @@ class ChannelController extends Controller
     public function getChannels(Account $account, Channel $channel = null)
     {
         $response = $this->channelsRepo->getChannels($channel);
-        return ApiResponse::success("Channeld fetched", ChannelResource::collection($response));
+        return ApiResponse::success("Channeld fetched", $response);
     }
+
+
 
     public function removeChannel(Account $account, Channel $channel)
     {

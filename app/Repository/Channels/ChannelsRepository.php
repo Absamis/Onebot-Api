@@ -5,6 +5,7 @@ namespace App\Repository\Channels;
 use App\Enums\ActivityLogEnums;
 use App\Enums\FacebookScopesEnums;
 use App\Enums\InstagramScopesEnums;
+use App\Http\Resources\Channels\ChannelResource;
 use App\Interfaces\Channels\IChannelsRepository;
 use App\Models\Channels\Channel;
 use App\Models\Configurations\AccountOption;
@@ -63,8 +64,12 @@ class ChannelsRepository implements IChannelsRepository
 
     public function getChannels(Channel $channel = null)
     {
-        $data = Channel::where("account_id", Auth::account()->id)->get();
-        return $data;
+        if (!$channel) {
+            $data = Channel::where("account_id", Auth::account()->id)->get();
+            return ChannelResource::collection($data);
+        } else {
+            return Channel::with("contacts")->find($channel->id);
+        }
     }
 
     public function removeChannel(Channel $channel)

@@ -47,7 +47,10 @@ Route::middleware("auth:sanctum")->group(function () {
         });
 
         Route::prefix("conversations/{contact}")->group(function () {
-            Route::post("assign-user", [ConversationController::class, "assignUser"]);
+            Route::get("", [ConversationController::class, "getContact"]);
+            Route::put("assign-user", [ConversationController::class, "assignUser"]);
+            Route::put("status", [ConversationController::class, "changeStatus"]);
+            Route::post("send-message", [ConversationController::class, "sendChatMessage"]);
         });
     });
 });

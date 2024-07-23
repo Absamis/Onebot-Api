@@ -5,23 +5,31 @@ namespace App\Repository\Channels;
 use App\Enums\ActivityLogEnums;
 use App\Enums\ChannelConversationEnums;
 use App\Interfaces\Channels\IConversationsRepository;
+use App\Models\Channels\ChannelConversation;
 use App\Models\Channels\Contact;
 use App\Models\User;
+use App\Repository\BaseRepository;
 use App\Services\UserService;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
-class ConversationsRepository implements IConversationsRepository
+class ConversationsRepository extends BaseRepository implements IConversationsRepository
 {
     /**
      * Create a new class instance.
      */
+    public $chatStorage;
     public function __construct()
     {
         //
+        $this->chatStorage = Storage::disk("chat_files");
     }
 
     public function assignUser(Contact $contact, User $user = null)
     {
         $uid = $user ? $user->id : null;
+        if ($uid == $contact->conversation_assigned_to && $contact->conversation_status == ChannelConversationEnums::assigned)
+            return $contact;
         $contact->update([
             "conversation_assigned_to" => $uid,
             "conversation_status" => ChannelConversationEnums::assigned
@@ -31,5 +39,70 @@ class ConversationsRepository implements IConversationsRepository
             "contact id" => $contact->id
         ]);
         return $contact;
+    }
+
+    public function changeStatus(Contact $contact, $status)
+    {
+        if ($contact->conversation_status == $status)
+            return $contact;
+        $contact->conversation_status = $status;
+        $contact->save();
+        UserService::logActivity(ActivityLogEnums::assignedConversation, [
+            "contact_id" => $contact->id,
+            "status" => $status
+        ]);
+        return $contact;
+    }
+
+    public function sendMessage($request, Contact $contact)
+    {
+        if ($contact->conversation_status != ChannelConversationEnums::assigned) {
+            abort(200, "This conversation is either closed or not yet assigned to a user");
+        }
+        if (auth()->user()->id != $contact->conversation_assigned_to) {
+            abort(403, "You can't send message to a conversation you are not assigned to");
+        }
+        $data = $request->validated();
+        $this->validateNotAllArrayFieldEmpty($data);
+        $files = $request->file("files") ?? [];
+        $attached = [];
+        foreach ($files as $key => $file) {
+            $fData = [
+                "name" => Storage::name($file),
+                "type" => Storage::mimeType($file),
+                "size" => Storage::size($file),
+                "path" => $this->chatStorage->put("files", $file),
+                "description" =>  $data["descriptions"][$key] ?? null,
+                "caption" => $data["captions"][$key] ?? null
+            ];
+            array_push($attached, $fData);
+        }
+        $conv = $contact->conversations()->active()->first();
+        if (!$conv) {
+            $conv = new ChannelConversation();
+            $conv->contact_id = $contact->id;
+        }
+        $convMessage = $conv->messages ?? [];
+        $newConv = [
+            "id" => Str::uuid(),
+            "app_type" => $contact->contact_app_type,
+            "date" => date("Y-m-d"),
+            "time" => date("H:i:s"),
+            "conv_type" => ChannelConversationEnums::adminConversationType,
+            "sender" => [
+                "id" => auth()->user()->id,
+                "name" => auth()->user()->name,
+                "type" => ChannelConversationEnums::adminConversationType,
+            ],
+            "attached" => $attached,
+            "message" => $data["message"] ?? null,
+            "status" => ChannelConversationEnums::sendingStatus
+        ];
+        array_push($convMessage, $newConv);
+        if (count($convMessage) >= config("services.utils.max_chat_message_count"))
+        $conv->saturation_status = true;
+        $conv->messages = $convMessage;
+        $conv->save();
+        return $newConv;
     }
 }

@@ -9,4 +9,6 @@ interface IConversationsRepository
 {
     //
     public function assignUser(Contact $contact, User $user = null);
+    public function changeStatus(Contact $contact, $status);
+    public function sendMessage($request, Contact $contact);
 }
