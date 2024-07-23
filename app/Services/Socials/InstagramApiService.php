@@ -72,7 +72,12 @@ class InstagramApiService extends BaseApiService
             "grant_type" => "authorization_code"
         ]);
 
-        return $response->json() ?? [];
+        $response = $response->json() ?? [];
+        if (isset($response["access_token"])) {
+            return $this->getLongLivedAccessToken($response["access_token"]);
+        }
+
+        abort(400, "Error connecting to Instagram. Try again", ["data" => $response]);
     }
 
     public function getLongLivedAccessToken($shortLivedToken)
@@ -85,5 +90,30 @@ class InstagramApiService extends BaseApiService
         ]);
 
         return $response->json() ?? [];
+    }
+
+    public function getUserData($accessToken)
+    {
+        $response = $this->apiRequest()->getRequest("/me", [
+            "access_token" => $accessToken,
+            "fields" => "id,username,email,profile_picture_url"
+        ]);
+
+        return $response->json() ?? [];
+    }
+
+    public function getIgUserData($code): SignupDataDto
+    {
+        $accResp = $this->getAccessToken($code);
+        $data = $this->getUserData($accResp["access_token"]);
+        $socialData = new SignupDataDto();
+        $socialData->name = $data["username"];
+        $socialData->email = $data["email"] ?? null;
+        $socialData->app_id = $data["id"];
+        $socialData->accessToken = $accResp["access_token"];
+        $socialData->refreshToken = $accResp["refresh_token"] ?? null;
+        $socialData->tokenExpiresIn = $accResp["expires_in"];
+        $socialData->photo = $data["profile_picture_url"] ?? null;
+        return $socialData;
     }
 }

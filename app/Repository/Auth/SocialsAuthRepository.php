@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Models\UserSigninOption;
 use App\Services\Socials\FacebookApiService;
 use App\Services\Socials\GoogleService;
+use App\Services\Socials\InstagramApiService;
 use App\Services\UserService;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,24 +24,24 @@ class SocialsAuthRepository implements ISocialsAuthRepository
      */
     public $fbService;
     public $googleService;
-    public function __construct(FacebookApiService $fbServ, GoogleService $gleService)
+    public $igService;
+    public function __construct(FacebookApiService $fbServ, GoogleService $gleService, InstagramApiService $igServ)
     {
-        //
         $this->fbService = $fbServ;
         $this->googleService = $gleService;
+        $this->igService = $igServ;
     }
 
     public function authRequest(SigninOption $option, $redirect_url)
     {
+        !$redirect_url ? abort(400, "Redirect url is required") : null;
         switch ($option->code) {
             case "fb":
-                !$redirect_url ? abort(400, "Redirect url is required") : null;
                 return $this->fbService->getLoginUrl($redirect_url, true);
-                break;
             case "google":
-                !$redirect_url ? abort(400, "Redirect url is required") : null;
                 return $this->googleService->getLoginUrl($redirect_url);
-                break;
+            case "instagram":
+                return $this->igService->getLoginUrl($redirect_url, true);
             default:
                 abort(400, "Signin option not available");
         }
@@ -57,8 +58,12 @@ class SocialsAuthRepository implements ISocialsAuthRepository
                 verifyLoginState($data["state"], "google-login-state");
                 $signupData = $this->googleService->getGoogleUserData($data["code"]);
                 break;
+            case "instagram":
+                verifyLoginState($data["state"], "ig-login-state");
+                $signupData = $this->igService->getIgUserData($data["code"]);
+                break;
             default:
-                abort(400, "Sigin option is not available");
+                abort(400, "Signin option is not available");
         }
         return $signupData;
     }
@@ -67,7 +72,7 @@ class SocialsAuthRepository implements ISocialsAuthRepository
     {
         $signupData = $this->authorize($option->code, $data);
         $checkUser = User::where("email", $signupData->email)->first();
-        $checkUser ? abort(400, "Account with this email already exsist") : null;
+        $checkUser ? abort(400, "Account with this email already exists") : null;
         $check = UserSigninOption::where(["type" => $option->code, "signin_app_id" => $signupData->app_id])->first();
         if (!$check) {
             $user = $this->createNewAccount($option->code, $signupData);
@@ -84,7 +89,7 @@ class SocialsAuthRepository implements ISocialsAuthRepository
         $signupData = $this->authorize($option->code, $data);
         $check = UserSigninOption::where(["type" => $option->code, "signin_app_id" => $signupData->app_id])->first();
         if (!$check) {
-            return abort(400, "Sigin option is not registered yet. kindly create an account");
+            return abort(400, "Signin option is not registered yet. Kindly create an account");
         } else {
             $user = $this->updateSigninDetails($check, $signupData);
             return $this->loginUser($user);
