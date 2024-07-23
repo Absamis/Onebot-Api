@@ -21,10 +21,12 @@
                 "type": "",
                 "size": "",
                 "path": "",
-                "description": ""
+                "description": "",
+                "caption": ""
             }
         ],
-        "message": ""
+        "message": "",
+        "status": ""
     }
 ]
 ```

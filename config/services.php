@@ -28,7 +28,9 @@ return [
         'key' => env('RESEND_KEY'),
     ],
     'utils' => [
-        'invitiation_active_days' => env("INVITATION_ACTIVE_DAYS")
+        'invitiation_active_days' => env("INVITATION_ACTIVE_DAYS"),
+        'max_chat_file_size' => env("MAX_CHAT_FILE_SIZE"),
+        'max_chat_message_count' => env("MEX_CHAT_MESSAGE_COUNT")
     ],
     'facebook' => [
         'api_url' => env("FACEBOOK_API_URL"),
