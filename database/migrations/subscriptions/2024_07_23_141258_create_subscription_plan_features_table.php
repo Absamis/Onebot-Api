@@ -20,7 +20,7 @@ return new class extends Migration
             $table->text("description")->nullable();
             $table->integer("status")->default(AppEnums::active);
             $table->timestamps();
-            $table->foreign("plan_id")->references("id")->on("membership_plans")->cascadeOnDelete();
+            $table->foreign("plan_id")->references("id")->on("subscription_plans")->cascadeOnDelete();
             $table->foreign("feature_id")->references("id")->on("app_features")->cascadeOnDelete();
         });
     }

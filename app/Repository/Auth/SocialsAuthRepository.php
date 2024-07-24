@@ -40,7 +40,7 @@ class SocialsAuthRepository implements ISocialsAuthRepository
                 return $this->fbService->getLoginUrl($redirect_url, true);
             case "google":
                 return $this->googleService->getLoginUrl($redirect_url);
-            case "instagram":
+            case "ig":
                 return $this->igService->getLoginUrl($redirect_url, true);
             default:
                 abort(400, "Signin option not available");

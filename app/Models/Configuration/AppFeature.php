@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class AppFeature extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['name', 'description', 'status'];
 }

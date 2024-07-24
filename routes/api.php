@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ConfigurationsController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\SubscriptionPlanController;
 
 
 Route::prefix("auth")->group(function () {
@@ -53,6 +54,8 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::post("send-message", [ConversationController::class, "sendChatMessage"]);
         });
     });
+    Route::post('plans/upgrade', [SubscriptionPlanController::class, 'upgrade']);
+    Route::post('plans/downgrade', [SubscriptionPlanController::class, 'downgrade']);
 });
 
 Route::prefix("configs")->group(function () {

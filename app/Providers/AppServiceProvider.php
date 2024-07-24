@@ -26,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
         //
         $this->app->bind(Authenticate::class, MiddlewareAuthenticate::class);
         $this->app->bind(IVerificationRepository::class, VerificationRepository::class);
+        
     }
 
     /**

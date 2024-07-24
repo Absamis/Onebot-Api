@@ -18,7 +18,7 @@ return new class extends Migration
             $table->date("plan_date_joined")->nullable();
             $table->unsignedBigInteger("plan_duration_in_days")->nullable();
             $table->date("plan_expiring_date")->nullable();
-            $table->foreign("plan_id")->references("id")->on("membership_plans")->restrictOnDelete();
+            $table->foreign("plan_id")->references("id")->on("subscription_plans")->restrictOnDelete();
         });
     }
 
