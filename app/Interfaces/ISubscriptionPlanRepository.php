@@ -2,10 +2,11 @@
 
 namespace App\Interfaces;
 
-use App\Models\User;
+use App\Models\Account;
 
 interface ISubscriptionPlanRepository
 {
-    public function upgradePlan(User $user, int $planId);
-    public function downgradePlan(User $user, int $planId);
+    public function upgradePlan(Account $account, int $planId);
+    public function downgradePlan(Account $account);
+    public function startTrial(Account $account, int $planId);
 }

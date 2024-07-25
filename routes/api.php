@@ -22,6 +22,8 @@ Route::prefix("auth")->group(function () {
 
 Route::middleware("auth:sanctum")->group(function () {
     Route::get("invitation/{token}/accept", [AccountController::class, "acceptInvite"]);
+    Route::get('plans', [SubscriptionPlanController::class, 'getPlans']);
+    Route::get('plans/{plan}/features', [SubscriptionPlanController::class, 'getPlanFeatures']);
 
     Route::prefix("user")->group(function () {
         Route::post('change-email-request', [UserController::class, 'changeEmailRequest']);
@@ -57,6 +59,7 @@ Route::middleware("auth:sanctum")->group(function () {
 
         Route::post('plans/upgrade', [SubscriptionPlanController::class, 'upgrade']);
         Route::post('plans/downgrade', [SubscriptionPlanController::class, 'downgrade']);
+        Route::post('plans/trial', [SubscriptionPlanController::class, 'trial']);
     });
 });
 
