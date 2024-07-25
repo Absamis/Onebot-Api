@@ -12,12 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         //
-        Schema::table("users", function (Blueprint $table) {
+        Schema::table("accounts", function (Blueprint $table) {
             $table->unsignedBigInteger("plan_id")->nullable();
             $table->string("plan_mode")->nullable()->comment(": 0- trial, 1- live");
             $table->date("plan_date_joined")->nullable();
             $table->unsignedBigInteger("plan_duration_in_days")->nullable();
             $table->date("plan_expiring_date")->nullable();
+            $table->boolean("trial_status")->default(false);
             $table->foreign("plan_id")->references("id")->on("subscription_plans")->restrictOnDelete();
         });
     }

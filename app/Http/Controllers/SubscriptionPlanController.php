@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Classes\ApiResponse;
 use App\Http\Controllers\Controller;
-use App\Interfaces\SubscriptionPlanRepositoryInterface;
+use App\Interfaces\ISubscriptionPlanRepository;
 use Illuminate\Http\Request;
 use App\Http\Resources\SubscriptionPlanResource;
 use Illuminate\Support\Facades\Auth;
@@ -14,7 +14,7 @@ class SubscriptionPlanController extends Controller
 {
     protected $subscriptionPlanRepo;
 
-    public function __construct(SubscriptionPlanRepositoryInterface $subscriptionPlanRepo)
+    public function __construct(ISubscriptionPlanRepository $subscriptionPlanRepo)
     {
         $this->subscriptionPlanRepo = $subscriptionPlanRepo;
     }

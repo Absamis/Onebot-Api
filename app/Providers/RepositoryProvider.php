@@ -22,7 +22,7 @@ use App\Services\Socials\FacebookApiService;
 use App\Services\Socials\InstagramApiService;
 use App\Services\Socials\GoogleService;
 use Illuminate\Support\ServiceProvider;
-use App\Interfaces\SubscriptionPlanRepositoryInterface;
+use App\Interfaces\ISubscriptionPlanRepository;
 use App\Repository\SubscriptionPlanRepository;
 
 class RepositoryProvider extends ServiceProvider
@@ -48,7 +48,7 @@ class RepositoryProvider extends ServiceProvider
         $this->app->bind(IVerificationRepository::class, VerificationRepository::class);
         $this->app->bind(IChannelsRepository::class, ChannelsRepository::class);
         $this->app->bind(IConversationsRepository::class, ConversationsRepository::class);
-        $this->app->bind(SubscriptionPlanRepositoryInterface::class, SubscriptionPlanRepository::class);
+        $this->app->bind(ISubscriptionPlanRepository::class, SubscriptionPlanRepository::class);
 
         $this->app->bind(ISocialsAuthRepository::class, SocialsAuthRepository::class);
         $this->app->bind(FacebookApiService::class, function () {

@@ -54,9 +54,10 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::put("status", [ConversationController::class, "changeStatus"]);
             Route::post("send-message", [ConversationController::class, "sendChatMessage"]);
         });
+
+        Route::post('plans/upgrade', [SubscriptionPlanController::class, 'upgrade']);
+        Route::post('plans/downgrade', [SubscriptionPlanController::class, 'downgrade']);
     });
-    Route::post('plans/upgrade', [SubscriptionPlanController::class, 'upgrade']);
-    Route::post('plans/downgrade', [SubscriptionPlanController::class, 'downgrade']);
 });
 
 Route::prefix("configs")->group(function () {
