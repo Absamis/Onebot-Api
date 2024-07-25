@@ -27,6 +27,16 @@ class ChannelController extends Controller
         return ApiResponse::success("Credentials fetched", $response);
     }
 
+    public function confirmChannel(Request $request, Account $account, AccountOption $option)
+    {
+        $data = $request->validate([
+            "code" => ["required"],
+            "state" => ["required"]
+        ]);
+        $response = $this->channelsRepo->confirmChannel($option, $data);
+        return ApiResponse::success("Channel confirmed succesfully", $response);
+    }
+
     public function addChannel(AddChannelRequest $request, Account $account, AccountOption $option)
     {
         $response = $this->channelsRepo->addChannel($option, $request->validated());

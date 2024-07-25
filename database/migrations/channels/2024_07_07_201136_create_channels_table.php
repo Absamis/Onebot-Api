@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger("account_id");
             $table->string("name");
             $table->string("type");
-            $table->string("photo")->nullable();
+            $table->longText("photo")->nullable();
             $table->string("description")->nullable();
             $table->string("channel_app_id")->unique();
             $table->text("token")->nullable();

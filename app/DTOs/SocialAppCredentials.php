@@ -14,6 +14,7 @@ class SocialAppCredentials
     public $scopes;
     public $state;
     public $url;
+    public $data;
     public function __construct(
         $app_id,
         $app_key,
@@ -22,6 +23,7 @@ class SocialAppCredentials
         $scopes,
         $state,
         $url,
+        $data = [],
     ) {
         //
         $this->app_id = $app_id;
@@ -31,5 +33,6 @@ class SocialAppCredentials
         $this->scopes = $scopes;
         $this->state = $state;
         $this->url = $url;
+        $this->data = $data;
     }
 }

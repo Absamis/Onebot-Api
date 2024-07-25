@@ -24,15 +24,16 @@ class FacebookApiService extends BaseApiService
         );
     }
 
-    public function getLoginUrl($redirect_url, $force = false)
+    public function getLoginUrl($redirect_url, $scopes = null, $force = false)
     {
+        $redirect_url = trim($redirect_url, "/") . "/";
         $loginState = setLoginState("fb-login-state");
         Cache::put(getClientIP() . "-fb_rdr", $redirect_url, 300);
-        $scope = FacebookScopesEnums::loginScope;
+        $scope = $scope ?? FacebookScopesEnums::loginScope;
         $req = $force ? "&auth_type=rerequest"  : null;
         $confId = config("services.facebook.config_id");
         $url = "https://www.facebook.com/v20.0/dialog/oauth?client_id=$this->apiKey&redirect_uri=$redirect_url&state=$loginState&config_id=$confId&scope=$scope" . $req;
-        return ["url" => $url];
+        return ["url" => $url, "app" => "facebook"];
     }
 
     public function getFbUserData($code): SignupDataDto
@@ -49,6 +50,14 @@ class FacebookApiService extends BaseApiService
         $socialData->photo = $data["photo"] ?? null;
         return $socialData;
         // return $uData;
+    }
+
+
+    public function getFbPages($code)
+    {
+        $accResp = $this->getAccessToken($code);
+        $data = $this->getPagesData($accResp["access_token"]);
+        return $data;
     }
 
     public function getLongLivedAccessToken($token)
@@ -71,7 +80,7 @@ class FacebookApiService extends BaseApiService
         $resp = $this->apiRequest()->getRequest("/oauth/access_token", [
             "client_id" => $this->apiKey,
             "client_secret" => $this->apiSecret,
-            "redirect_uri" => trim(cache(getClientIP() . "-fb_rdr"), "/") . "/",
+            "redirect_uri" => cache(getClientIP() . "-fb_rdr"),
             "code" => $code
         ]);
         $resp = $resp->json() ?? [];
@@ -90,6 +99,20 @@ class FacebookApiService extends BaseApiService
         $resp = $resp->json() ?? [];
         $uid = $resp["id"] ?? null;
         if (!$uid)
+            abort(400, "Error getting facebook data. Try again", ["data" => $resp]);
+        return $resp;
+    }
+
+    public function getPagesData($accessToken)
+    {
+        $uData = $this->getUserData($accessToken);
+        $uid = $uData["id"];
+        $resp = $this->apiRequest()->getRequest("/$uid/accounts", [
+            "access_token" => $accessToken,
+            "fields" => "id,access_token,category,name,picture"
+        ]);
+        $resp = $resp->json() ?? [];
+        if (!$resp)
             abort(400, "Error getting facebook data. Try again", ["data" => $resp]);
         return $resp;
     }

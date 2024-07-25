@@ -39,6 +39,7 @@ Route::middleware("auth:sanctum")->group(function () {
         Route::put("members/{member}/change-role", [AccountController::class, "changeMemberRole"]);
 
         Route::get("get-credentials/channels/{option}", [ChannelController::class, "getChannelsCredential"]);
+        Route::post("confirm-channel/{option}", [ChannelController::class, "confirmChannel"]);
         Route::post("add-channel/{option}", [ChannelController::class, "addChannel"]);
 
         Route::get("channels/{channel?}", [ChannelController::class, "getChannels"]);

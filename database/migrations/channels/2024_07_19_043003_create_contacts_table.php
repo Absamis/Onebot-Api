@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string("token")->nullable();
             $table->string("email")->nullable();
             $table->string("phone")->nullable();
-            $table->string("photo")->nullable();
+            $table->longText("photo")->nullable();
             $table->string("gender")->nullable();
             $table->string("locale")->nullable();
             $table->string("contact_app_type");

@@ -27,13 +27,39 @@ class ChannelsRepository implements IChannelsRepository
 
     public function getChannelsCredentials(AccountOption $option)
     {
+        $rdr = $_GET["redirect_url"] ?? abort(400, "Redirect url is required for instagram channel");
         switch ($option->code) {
             case "fb":
-                return $this->fbService->getCredentials(FacebookScopesEnums::pageScopes);
+                return $this->fbService->getLoginUrl($rdr, FacebookScopesEnums::pageScopes);
             case "ig":
-                return $this->igService->getCredentials(InstagramScopesEnums::pageScopes);
+                return $this->igService->getLoginUrl($rdr, InstagramScopesEnums::loginScope, true);
             default:
                 abort(400, "Invalid account option");
+        }
+    }
+
+    public function confirmChannel(AccountOption $option, $data)
+    {
+        switch ($option->code) {
+            case "fb":
+                verifyLoginState($data["state"], "fb-login-state");
+                $signupData = $this->fbService->getFbPages($data["code"]);
+                return $signupData;
+                break;
+            case "ig":
+                verifyLoginState($data["state"], "ig-login-state");
+                $signupData = $this->igService->getIgUserData($data["code"]);
+                $channelData = [
+                    "name" => $signupData->name,
+                    "description" => "",
+                    "channel_app_id" => $signupData->app_id,
+                    "token" => $signupData->accessToken,
+                    "photo" => $signupData->photo
+                ];
+                return $this->addChannel($option, $channelData);
+                break;
+            default:
+                abort(400, "Account option is not available");
         }
     }
 

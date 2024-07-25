@@ -12,4 +12,5 @@ interface IChannelsRepository
     public function addChannel(AccountOption $option, $data);
     public function getChannels(Channel $channel = null);
     public function removeChannel(Channel $channel);
+    public function confirmChannel(AccountOption $option, $data);
 }

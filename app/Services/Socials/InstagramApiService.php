@@ -19,28 +19,23 @@ class InstagramApiService extends BaseApiService
             token: null,
             scopes: $scopes,
             state: generateLoginState(),
-            url: null
+            url: null,
+            data: [
+                "display" => "page",
+                "extra" => "{'setup':{'channel':'IG_API_ONBOARDING'}}"
+            ]
         );
     }
 
-    public function getLoginUrl($redirect_url, $force = false)
+    public function getLoginUrl($redirect_url, $scopes = null, $force = false)
     {
+        $redirect_url = trim($redirect_url, "/") . "/";
         $loginState = setLoginState("ig-login-state");
         Cache::put(getClientIP() . "-ig_rdr", $redirect_url, 300);
-        $scope = InstagramScopesEnums::loginScope;
+        $scope = $scopes ?? InstagramScopesEnums::loginScope;
         $req = $force ? "&auth_type=rerequest" : null;
-        $url = "https://www.facebook.com/v20.0/dialog/oauth?client_id=" . config("services.instagram.app_id") . "&redirect_uri=$redirect_url&state=$loginState&scope=$scope" . $req;
-        return ["url" => $url];
-    }
-
-    public function getUserPages($accessToken)
-    {
-        $response = $this->apiRequest()->getRequest("/me/accounts", [
-            "access_token" => $accessToken,
-            "fields" => "id,name,access_token,instagram_business_account"
-        ]);
-
-        return $response->json() ?? [];
+        $url = "https://api.instagram.com/oauth/authorize?client_id=" . config("services.instagram.app_id") . "&response_type=code&redirect_uri=$redirect_url&state=$loginState&scope=$scope" . $req;
+        return ["url" => $url, "app" => "instagram"];
     }
 
     public function getInstagramBusinessAccount($pageId, $accessToken)
@@ -64,29 +59,26 @@ class InstagramApiService extends BaseApiService
 
     public function getAccessToken($code)
     {
-        $response = $this->apiRequest()->postRequest("/oauth/access_token", [
-            "client_id" => config("services.instagram.app_id"),
+        $response = $this->apiRequest()->asForm()->postRequest("https://api.instagram.com/oauth/access_token", [
             "client_secret" => config("services.instagram.app_secret"),
-            "redirect_uri" => trim(cache(getClientIP() . "-ig_rdr"), "/") . "/",
+            "client_id" => config("services.instagram.app_id"),
+            "redirect_uri" => cache(getClientIP() . "-ig_rdr"),
             "code" => $code,
             "grant_type" => "authorization_code"
         ]);
-
         $response = $response->json() ?? [];
         if (isset($response["access_token"])) {
             return $this->getLongLivedAccessToken($response["access_token"]);
         }
-
         abort(400, "Error connecting to Instagram. Try again", ["data" => $response]);
     }
 
     public function getLongLivedAccessToken($shortLivedToken)
     {
-        $response = $this->apiRequest()->postRequest("/access_token", [
+        $response = $this->apiRequest()->getRequest("/access_token", [
             "grant_type" => "ig_exchange_token",
-            "client_id" => config("services.instagram.app_id"),
             "client_secret" => config("services.instagram.app_secret"),
-            "exchange_token" => $shortLivedToken
+            "access_token" => $shortLivedToken
         ]);
 
         return $response->json() ?? [];
@@ -96,10 +88,10 @@ class InstagramApiService extends BaseApiService
     {
         $response = $this->apiRequest()->getRequest("/me", [
             "access_token" => $accessToken,
-            "fields" => "id,username,email,profile_picture_url"
+            "fields" => "id,username,profile_picture_url"
         ]);
-
-        return $response->json() ?? [];
+        $resp = $response->json() ?? [];
+        return $resp;
     }
 
     public function getIgUserData($code): SignupDataDto

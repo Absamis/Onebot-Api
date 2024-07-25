@@ -27,6 +27,7 @@ class AddChannelRequest extends FormRequest
             "description" => ["nullable"],
             "channel_app_id" => ["required"],
             "token" => ["required"],
+            "photo" => ["nullable"],
             "refresh_token" => ["nullable"],
             "token_expires_in" => ["nullable"],
         ];
