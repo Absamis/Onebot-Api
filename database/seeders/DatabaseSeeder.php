@@ -18,7 +18,9 @@ class DatabaseSeeder extends Seeder
         $this->call([
             SigninOptionSeeder::class,
             RoleSeeder::class,
-            AccountOptionSeeder::class
+            AccountOptionSeeder::class,
+            SubscriptionPlansSeeder::class,
+            SubscriptionPlanFeaturesSeeder::class,
         ]);
     }
 }
