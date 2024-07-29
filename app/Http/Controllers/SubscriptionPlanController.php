@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Classes\ApiResponse;
+use App\Http\Controllers\Controller;
 use App\Interfaces\ISubscriptionPlanRepository;
 use Illuminate\Http\Request;
 use App\Http\Resources\SubscriptionPlanResource;
-use App\Models\Account;
-use App\Models\Subscriptions\SubscriptionPlan;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class SubscriptionPlanController extends Controller
 {
@@ -18,39 +19,31 @@ class SubscriptionPlanController extends Controller
         $this->subscriptionPlanRepo = $subscriptionPlanRepo;
     }
 
-    public function upgrade(Request $request, Account $account)
+    public function upgrade(Request $request)
     {
         $data = $request->validate([
             'plan_id' => ['required', 'exists:subscription_plans,id'],
         ]);
-        $this->subscriptionPlanRepo->upgradePlan($account, $data['plan_id']);
-        return ApiResponse::success('Plan upgraded successfully.', new SubscriptionPlanResource($account));
+        $user = Auth::user();
+        $this->subscriptionPlanRepo->upgradePlan($user, $data['plan_id']);
+        return ApiResponse::success('Plan upgraded successfully.', new SubscriptionPlanResource($user));
     }
 
-    public function downgrade(Request $request, Account $account)
-    {
-        $this->subscriptionPlanRepo->downgradePlan($account);
-        return ApiResponse::success('Plan downgraded successfully.', new SubscriptionPlanResource($account));
-    }
-
-    public function trial(Request $request, Account $account)
+    public function downgrade(Request $request)
     {
         $data = $request->validate([
             'plan_id' => ['required', 'exists:subscription_plans,id'],
         ]);
-        $this->subscriptionPlanRepo->startTrial($account, $data['plan_id']);
-        return ApiResponse::success('Trial started successfully.', new SubscriptionPlanResource($account));
+        $user = Auth::user();
+        $this->subscriptionPlanRepo->downgradePlan($user, $data['plan_id']);
+        return ApiResponse::success('Plan downgraded successfully.', new SubscriptionPlanResource($user));
     }
 
-    public function getPlans()
+    public function purchasePlan(Request $request)
     {
-        $plans = SubscriptionPlan::all();
-        return ApiResponse::success('Subscription plans retrieved successfully.', $plans);
-    }
-
-    public function getPlanFeatures($planId)
-    {
-        $plan = SubscriptionPlan::findOrFail($planId);
-        return ApiResponse::success('Subscription plan features retrieved successfully.', $plan->features);
+        $data = $request->validate([
+            'plan_id' => ['required', 'exists:subscription_plans,id'],
+            'billing_cycle_id' => ["nullable", "exists:subscription_plan_promos,id"]
+        ]);
     }
 }
