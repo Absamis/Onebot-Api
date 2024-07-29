@@ -56,5 +56,10 @@ return [
         'app_id' => env("INSTAGRAM_APP_ID"),
         'app_secret' => env("INSTAGRAM_APP_SECRET"),
         'config_id' => env("INSTAGRAM_CONFIG_ID"),
-    ]
+    ],
+    'stripe' => [
+        'public_key' => env("STRIPE_PUBLIC_KEY"),
+        'private_key' => env("STRIPE_SECRET_KEY"),
+        'webhook_key' => env("STRIPE_WEBHOOK_KEY")
+    ],
 ];

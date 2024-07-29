@@ -27,4 +27,9 @@ class SubscriptionPlan extends Model
     {
         return $this->hasMany(SubscriptionPlanFeatures::class, 'plan_id');
     }
+
+    public function promos()
+    {
+        return $this->hasMany(SubscriptionPlanPromo::class, "plan_id");
+    }
 }

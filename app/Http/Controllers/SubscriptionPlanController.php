@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Interfaces\ISubscriptionPlanRepository;
 use Illuminate\Http\Request;
 use App\Http\Resources\SubscriptionPlanResource;
+use App\Models\Account;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -39,11 +40,13 @@ class SubscriptionPlanController extends Controller
         return ApiResponse::success('Plan downgraded successfully.', new SubscriptionPlanResource($user));
     }
 
-    public function purchasePlan(Request $request)
+    public function purchasePlan(Account $account, Request $request)
     {
         $data = $request->validate([
             'plan_id' => ['required', 'exists:subscription_plans,id'],
-            'billing_cycle_id' => ["nullable", "exists:subscription_plan_promos,id"]
+            "plan_duration" => ["nullable", "numeric"],
+            'billing_cycle_id' => ["nullable", "exists:subscription_plan_promos,id"],
+            "pay_method" => ["required"]
         ]);
     }
 }

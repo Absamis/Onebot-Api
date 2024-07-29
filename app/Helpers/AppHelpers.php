@@ -1,7 +1,8 @@
 <?php
 
 use App\Enums\AppEnums;
-use App\Models\AppSetting;
+use App\Enums\SubscriptionEnums;
+use App\Models\Configurations\AppSetting;
 use App\Models\Configurations\Role;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -74,5 +75,52 @@ if (!function_exists("getRole")) {
     function getRole($code)
     {
         return Role::where(["code" => $code])->first();
+    }
+}
+
+if (!function_exists('convertModeToDays')) {
+    function convertModeToDays($mode, $value)
+    {
+        switch ($mode) {
+            case SubscriptionEnums::dailyMode:
+                return floor($value);
+            case SubscriptionEnums::weeklyMode:
+                return floor($value * 7);
+            case SubscriptionEnums::monthlyMode:
+                return floor($value * 30);
+            case SubscriptionEnums::yearlyMode:
+                return floor($value * 365);
+            default:
+                return 1;
+        }
+    }
+}
+
+if (!function_exists('convertDaysToMode')) {
+    function convertDaysToMode($mode, $value)
+    {
+        switch ($mode) {
+            case SubscriptionEnums::dailyMode:
+                return $value;
+            case SubscriptionEnums::weeklyMode:
+                return ($value / 7);
+            case SubscriptionEnums::monthlyMode:
+                return ($value / 30);
+            case SubscriptionEnums::yearlyMode:
+                return ($value / 365);
+            default:
+                return 1;
+        }
+    }
+}
+
+
+if (!function_exists("appSettings")) {
+    function appSettings()
+    {
+        $data = Cache::remember("app-settings", 3600, function () {
+            return AppSetting::query()->first() ?? new AppSetting();
+        });
+        return $data;
     }
 }

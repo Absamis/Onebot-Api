@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Accounts\AccountPlanLog;
+use App\Models\Billings\Transaction;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -35,5 +37,15 @@ class Account extends Model
         return Attribute::get(function () {
             return $this->userid == (auth()->user()->id ?? null);
         });
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class, "account_id");
+    }
+
+    public function plan_logs()
+    {
+        return $this->hasMany(AccountPlanLog::class, "account_id");
     }
 }
