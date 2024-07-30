@@ -16,6 +16,7 @@ enum ActivityLogEnums
     const conversationStatusChanged = "conv-status-changed";
     const addedChannel = "added-channel";
     const deletedChannel = "deleted-channel";
+    const subscribedPlan = "plan-subscription";
 
     const logMessages = [
         self::userSignin => "Signed in",
@@ -29,6 +30,7 @@ enum ActivityLogEnums
         self::assignedConversation => "Assigned converation to a user",
         self::addedChannel => "Added channel to account",
         self::deletedChannel => "Deleted a channel",
-        self::conversationStatusChanged => "Changed the status of the conversation"
+        self::conversationStatusChanged => "Changed the status of the conversation",
+        self::subscribedPlan => "Subscribed to a plan (renewal/new purchase)"
     ];
 }

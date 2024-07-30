@@ -15,6 +15,7 @@ enum SubscriptionEnums
 
     const planPurchaseCode = "plan-purchase";
     const planRenewalCode = "plan-renewal";
+    const planDowngradeCode = "plan-downgrade";
 
     const narrations = [
         self::planPurchaseCode => "Purchased a subscription plan",

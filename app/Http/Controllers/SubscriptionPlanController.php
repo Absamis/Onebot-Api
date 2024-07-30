@@ -20,25 +20,6 @@ class SubscriptionPlanController extends Controller
         $this->subscriptionPlanRepo = $subscriptionPlanRepo;
     }
 
-    public function upgrade(Request $request)
-    {
-        $data = $request->validate([
-            'plan_id' => ['required', 'exists:subscription_plans,id'],
-        ]);
-        $user = Auth::user();
-        $this->subscriptionPlanRepo->upgradePlan($user, $data['plan_id']);
-        return ApiResponse::success('Plan upgraded successfully.', new SubscriptionPlanResource($user));
-    }
-
-    public function downgrade(Request $request)
-    {
-        $data = $request->validate([
-            'plan_id' => ['required', 'exists:subscription_plans,id'],
-        ]);
-        $user = Auth::user();
-        $this->subscriptionPlanRepo->downgradePlan($user, $data['plan_id']);
-        return ApiResponse::success('Plan downgraded successfully.', new SubscriptionPlanResource($user));
-    }
 
     public function purchasePlan(Account $account, Request $request)
     {
@@ -48,5 +29,7 @@ class SubscriptionPlanController extends Controller
             'billing_cycle_id' => ["nullable", "exists:subscription_plan_promos,id"],
             "pay_method" => ["required"]
         ]);
+        $response = $this->subscriptionPlanRepo->purchasePlan($data);
+        return ApiResponse::success("Plan purchase initiated", $response);
     }
 }

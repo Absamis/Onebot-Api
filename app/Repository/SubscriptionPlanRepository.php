@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\DTOs\PayGatewayData;
+use App\Enums\ActivityLogEnums;
 use App\Models\Subscriptions\SubscriptionPlan;
 use App\Models\Account;
 use App\Models\Subscriptions\SubscriptionPlanPromo;
@@ -12,11 +13,11 @@ use App\Enums\SubscriptionEnums;
 use App\Enums\TransactionEnums;
 use App\Services\PayGateways\StripePaymentService;
 use App\Services\TransactionService;
+use App\Services\UserService;
 use Illuminate\Support\Facades\Auth;
 
 class SubscriptionPlanRepository implements ISubscriptionPlanRepository
 {
-
 
     public function purchasePlan($data)
     {
@@ -36,94 +37,82 @@ class SubscriptionPlanRepository implements ISubscriptionPlanRepository
         $payUrl = null;
 
         $purType = SubscriptionEnums::planPurchaseCode;
-        if ($subsPlan->plan_id == Auth::account()->plan_id)
+        if ($subsPlan->plan_id == Auth::account()->plan_id && Auth::account()->plan_mode == SubscriptionEnums::liveMode)
             $purType = SubscriptionEnums::planRenewalCode;
         $narr = SubscriptionEnums::narrations[$purType];
-        $init = $this->initiatePaymentCheckout($amount, $payMethod, $purType, $narr);
-
-        Auth::account()->plan_logs()->create([
+        $init = TransactionService::initiateTransaction($amount, $payMethod, $purType, $narr);
+        $pl = Auth::account()->plan_logs()->create([
             "plan_id" => $subsPlan->id,
             "plan_mode" => SubscriptionEnums::liveMode,
             "date_joined" => now()->toDate(),
             "log_type" => $purType,
             "subscription_mode" => $subsPlan->subscription_mode,
             "duration_in_days" => $duration,
-            "reference" => $init["data"]["ref"],
-            "status" => AppEnums::active
+            "reference" => $init->reference,
+            "status" => AppEnums::inactive
+        ]);
+        UserService::logActivity(ActivityLogEnums::subscribedPlan, [
+            "plan_log_id" => $pl->id,
+            "transaction_id" => $init->reference
         ]);
         return $init;
     }
 
-    private function initiatePaymentCheckout($amount, $payMethod, $transType, $narration = null)
+    public function processPlanPurchase(Account $account, $transRef)
     {
-        $transRef = TransactionService::generateTransactionId();
-        $payUrl = $payRef = null;
-        switch ($payMethod) {
-            case "stripe":
-                $rdr = $_GET["redirect_url"] ?? null;
-                if (!$rdr)
-                    abort(400, "Redirect url is required");
-                $payData = [
-                    "name" => $transType,
-                    "amount" => $amount
-                ];
-                $stripeService = new StripePaymentService();
-                $resp = $stripeService->InitCheckOut($transRef, $payData);
-                $payUrl = $resp["url"];
-                break;
-            default:
-                abort(400, "Payment method is not available");
-        }
-
-        Auth::account()->transactions()->create([
-            "id" => $transRef,
-            "transaction_type" => $transType,
-            "amount" => $amount,
-            "currency" => appSettings()->currency_code,
-            "narration" => $narration,
-            "payment_method" => $payMethod,
-            "payment_reference" => $payRef,
-            "transaction_date" => now()->toDateTime(),
-            "status" => TransactionEnums::pendingStatus
-        ]);
-        return new PayGatewayData(
-            url: $payUrl,
-            reference: $transRef
-        );
+        $planDet = $account->plan_logs()->where(["reference" => $transRef, "status" => AppEnums::inactive])->first();
+        if (!$planDet)
+            abort(200, "No active plan purchase initiated");
+        $plLog = $this->updateAccountPlan($account, $planDet);
+        //Send purchase Notification
+        return $plLog;
     }
 
-    public function upgradePlan(Account $account, int $planId): ?SubscriptionPlan
+    private function updateAccountPlan($account, $planLog)
     {
-        $plan = SubscriptionPlan::findOrFail($planId);
-        $promo = $this->getActivePromo($planId);
-
-        if ($promo) {
-            $account->plan_duration_in_days = $promo->subs_in_days;
-            $account->plan_expiring_date = now()->addDays($promo->subs_in_days);
-        } else {
-            $duration = $this->getPlanDurationInDays($plan);
-            $account->plan_duration_in_days = $duration;
-            $account->plan_expiring_date = now()->addDays($duration);
+        $daysLeft = 0;
+        $prevDueDate = strtotime($$account->plan_expiring_date);
+        if ($prevDueDate > time()) {
+            $daysLeft = round(($prevDueDate - time()) / 60 / 60 / 24);
         }
-        $account->plan_id = $plan->id;
-        $account->plan_mode = 'live';
-        $account->plan_date_joined = now();
-        $account->save();
-        return $plan;
+        $plDur = $planLog->duration_in_days;
+        $plDurMode = convertDaysToMode($planLog->plan->subscription_mode, $planLog->duration_in_days);
+        if ($planLog->log_type == SubscriptionEnums::planRenewalCode) {
+            $dtJoined = date("Y-m-d", strtotime($$account->plan_expiring_date . " +1 day"));
+            $newDur = $plDur + $daysLeft;
+            $account->plan_date_joined = $dtJoined;
+            $account->plan_duration_in_days = $newDur;
+            $account->plan_expiring_date = date("Y-m-d", strtotime($dtJoined . " +$newDur days"));
+            $account->save();
+        } else {
+            $dtJoined = now()->toDate();
+            $account->plan_date_joined = $dtJoined;
+            $account->plan_mode = $planLog->plan_mode;
+            $account->plan_id = $planLog->plan_id;
+            $account->plan_duration_in_days = $plDur;
+            $account->plan_expiring_date = $plDur ? date("Y-m-d", strtotime("+$planLog->duration_in_days days")) : null;
+            $account->save();
+        }
+        $planLog->status = AppEnums::active;
+        $planLog->save();
+        return $planLog;
     }
 
     public function downgradePlan(Account $account): ?SubscriptionPlan
     {
-        $plan = SubscriptionPlan::where('is_default', true)->firstOrFail();
-        $account->plan_id = $plan->id;
-        $account->plan_mode = 'live';
-        $account->plan_date_joined = now();
-        $duration = $this->getPlanDurationInDays($plan);
-        $account->plan_duration_in_days = $duration;
-        $account->plan_expiring_date = now()->addDays($duration);
-        $account->trial_status = false;
-        $account->save();
-        return $plan;
+        $subsPlan = SubscriptionPlan::where('is_default', true)->firstOrFail();
+        $pl = Auth::account()->plan_logs()->create([
+            "plan_id" => $subsPlan->id,
+            "plan_mode" => SubscriptionEnums::liveMode,
+            "date_joined" => now()->toDate(),
+            "log_type" => SubscriptionEnums::planDowngradeCode,
+            "subscription_mode" => $subsPlan->subscription_mode,
+            "duration_in_days" => null,
+            "status" => AppEnums::active
+        ]);
+
+        $plg = $this->updateAccountPlan($account, $pl);
+        return $plg;
     }
 
     public function startTrial(Account $account, int $planId): ?SubscriptionPlan
@@ -144,24 +133,5 @@ class SubscriptionPlanRepository implements ISubscriptionPlanRepository
         $account->trial_status = true;
         $account->save();
         return $plan;
-    }
-
-    protected function getActivePromo(int $planId): ?SubscriptionPlanPromo
-    {
-        return SubscriptionPlanPromo::where('plan_id', $planId)
-            ->where('status', AppEnums::active)
-            ->first();
-    }
-
-    protected function getPlanDurationInDays(SubscriptionPlan $plan): int
-    {
-        switch ($plan->subscription_mode) {
-            case 'monthly':
-                return 30;
-            case 'yearly':
-                return 365;
-            default:
-                throw new \InvalidArgumentException("Unknown plan mode: {$plan->mode}");
-        }
     }
 }

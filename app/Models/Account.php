@@ -19,6 +19,12 @@ class Account extends Model
         "company_url",
         "description",
         "type",
+        "plan_id",
+        "plan_mode",
+        "plan_date_joined",
+        "plan_duration_in_days",
+        "plan_expiring_date",
+        "trial_status",
         "status"
     ];
 
