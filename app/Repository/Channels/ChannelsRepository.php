@@ -12,17 +12,20 @@ use App\Models\Configurations\AccountOption;
 use App\Services\Socials\FacebookApiService;
 use App\Services\UserService;
 use App\Services\Socials\InstagramApiService;
+use App\Services\Socials\WhatsAppApiService;
 use Illuminate\Support\Facades\Auth;
 
 class ChannelsRepository implements IChannelsRepository
 {
     public $fbService;
     public $igService;
+    public $waService;
 
-    public function __construct(FacebookApiService $fbSv, InstagramApiService $igSv)
+    public function __construct(FacebookApiService $fbSv, InstagramApiService $igSv, WhatsAppApiService $waSv)
     {
         $this->fbService = $fbSv;
         $this->igService = $igSv;
+        $this->waService = $waSv;
     }
 
     public function getChannelsCredentials(AccountOption $option)
@@ -33,6 +36,8 @@ class ChannelsRepository implements IChannelsRepository
                 return $this->fbService->getLoginUrl($rdr, FacebookScopesEnums::pageScopes);
             case "ig":
                 return $this->igService->getLoginUrl($rdr, InstagramScopesEnums::loginScope, true);
+            case "wa":
+                return $this->waService->getLoginUrl($rdr);
             default:
                 abort(400, "Invalid account option");
         }
@@ -45,7 +50,6 @@ class ChannelsRepository implements IChannelsRepository
                 verifyLoginState($data["state"], "fb-login-state");
                 $signupData = $this->fbService->getFbPages($data["code"]);
                 return $signupData;
-                break;
             case "ig":
                 verifyLoginState($data["state"], "ig-login-state");
                 $signupData = $this->igService->getIgUserData($data["code"]);
@@ -57,7 +61,17 @@ class ChannelsRepository implements IChannelsRepository
                     "photo" => $signupData->photo
                 ];
                 return $this->addChannel($option, $channelData);
-                break;
+            case "wa":
+                verifyLoginState($data["state"], "wa-login-state");
+                $signupData = $this->waService->getWaUserData($data["code"]);
+                $channelData = [
+                    "name" => $signupData->name,
+                    "description" => "",
+                    "channel_app_id" => $signupData->app_id,
+                    "token" => $signupData->accessToken,
+                    "photo" => $signupData->photo
+                ];
+                return $this->addChannel($option, $channelData);
             default:
                 abort(400, "Account option is not available");
         }
@@ -72,6 +86,9 @@ class ChannelsRepository implements IChannelsRepository
                 break;
             case "ig":
                 $data["type"] = "ig";
+                break;
+            case "wa":
+                $data["type"] = "wa";
                 break;
             default:
                 abort(400, "Invalid request sent");
