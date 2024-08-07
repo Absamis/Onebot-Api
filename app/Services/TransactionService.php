@@ -30,13 +30,14 @@ class TransactionService
             case "stripe":
                 $rdr = $_GET["redirect_url"] ?? null;
                 if (!$rdr)
-                    abort(400, "Redirect url is required");
+                    abort(400, "redirect_url is required");
                 $payData = [
                     "name" => $transType,
-                    "amount" => $amount
+                    "amount" => $amount,
+                    "currency" => appSettings()->currency_code
                 ];
                 $stripeService = new StripePaymentService();
-                $resp = $stripeService->InitCheckOut($transRef, $payData);
+                $resp = $stripeService->InitCheckOut($transRef, $payData, $rdr);
                 $payUrl = $resp["url"];
                 break;
             default:

@@ -21,8 +21,6 @@ class StripePaymentService
         return $response;
     }
 
-
-
     private function createCardPaymentMethod($data)
     {
         $response = $this->stripeRequest->paymentMethods->create([

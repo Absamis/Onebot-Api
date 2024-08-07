@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Subscriptions\SubscriptionPlanPromo;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -21,6 +22,8 @@ class DatabaseSeeder extends Seeder
             AccountOptionSeeder::class,
             SubscriptionPlansSeeder::class,
             SubscriptionPlanFeaturesSeeder::class,
+            SubscriptionPlanPromo::class,
+            AppSettingSeeder::class
         ]);
     }
 }

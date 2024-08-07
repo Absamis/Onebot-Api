@@ -3,6 +3,7 @@
 namespace App\Repository\Channels;
 
 use App\Enums\ActivityLogEnums;
+use App\Enums\ChannelEnums;
 use App\Enums\FacebookScopesEnums;
 use App\Enums\InstagramScopesEnums;
 use App\Http\Resources\Channels\ChannelResource;
@@ -32,11 +33,11 @@ class ChannelsRepository implements IChannelsRepository
     {
         $rdr = $_GET["redirect_url"] ?? abort(400, "Redirect url is required for instagram channel");
         switch ($option->code) {
-            case "fb":
+            case ChannelEnums::facebookChannelCode:
                 return $this->fbService->getLoginUrl($rdr, FacebookScopesEnums::pageScopes);
-            case "ig":
+            case ChannelEnums::instagramChannelCode:
                 return $this->igService->getLoginUrl($rdr, InstagramScopesEnums::loginScope, true);
-            case "wa":
+            case ChannelEnums::whatsappChanelCode:
                 return $this->waService->getLoginUrl($rdr);
             default:
                 abort(400, "Invalid account option");
@@ -46,11 +47,11 @@ class ChannelsRepository implements IChannelsRepository
     public function confirmChannel(AccountOption $option, $data)
     {
         switch ($option->code) {
-            case "fb":
+            case ChannelEnums::facebookChannelCode:
                 verifyLoginState($data["state"], "fb-login-state");
                 $signupData = $this->fbService->getFbPages($data["code"]);
                 return $signupData;
-            case "ig":
+            case ChannelEnums::instagramChannelCode:
                 verifyLoginState($data["state"], "ig-login-state");
                 $signupData = $this->igService->getIgUserData($data["code"]);
                 $channelData = [
@@ -61,7 +62,7 @@ class ChannelsRepository implements IChannelsRepository
                     "photo" => $signupData->photo
                 ];
                 return $this->addChannel($option, $channelData);
-            case "wa":
+            case ChannelEnums::whatsappChanelCode:
                 verifyLoginState($data["state"], "wa-login-state");
                 $signupData = $this->waService->getWaUserData($data["code"]);
                 $channelData = [
@@ -81,14 +82,14 @@ class ChannelsRepository implements IChannelsRepository
     {
         $data["account_id"] = Auth::account()->id;
         switch ($option->code) {
-            case "fb":
-                $data["type"] = "fb";
+            case ChannelEnums::facebookChannelCode:
+                $data["type"] = ChannelEnums::facebookChannelCode;
                 break;
-            case "ig":
-                $data["type"] = "ig";
+            case ChannelEnums::instagramChannelCode:
+                $data["type"] = ChannelEnums::instagramChannelCode;
                 break;
-            case "wa":
-                $data["type"] = "wa";
+            case ChannelEnums::whatsappChanelCode:
+                $data["type"] = ChannelEnums::whatsappChanelCode;
                 break;
             default:
                 abort(400, "Invalid request sent");

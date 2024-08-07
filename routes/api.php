@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ConfigurationsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SubscriptionPlanController;
-
+use App\Http\Controllers\TransactionController;
 
 Route::prefix("auth")->group(function () {
     Route::get("{option}/auth-request", [SignupController::class, "signupRequest"]);
@@ -58,9 +58,7 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::post("send-message", [ConversationController::class, "sendChatMessage"]);
         });
 
-        Route::post('plans/upgrade', [SubscriptionPlanController::class, 'upgrade']);
-        Route::post('plans/downgrade', [SubscriptionPlanController::class, 'downgrade']);
-        Route::post('plans/trial', [SubscriptionPlanController::class, 'trial']);
+        Route::post("plans/purchase", [SubscriptionPlanController::class, "purchasePlan"]);
     });
 });
 
@@ -68,6 +66,8 @@ Route::prefix("configs")->group(function () {
     Route::get('/account-options', [ConfigurationsController::class, 'getAccountOptions']);
     Route::get('/roles', [ConfigurationsController::class, 'getRoles']);
     Route::get('/signin-options', [ConfigurationsController::class, 'getSigninOptions']);
+
+    Route::get("subscription-plans", [SubscriptionPlanController::class, "getPlans"]);
 });
 
 
@@ -75,4 +75,6 @@ Route::prefix("webhooks/callback")->group(function () {
     Route::match(["get", "post"], "facebook", [FacebookChannelController::class, "webhook"]);
     Route::match(["get", "post"], "instagram", [InstagramChannelController::class, "webhook"]);
     Route::match(["get", "post"], "whatsapp", [WhatsAppChannelController::class, "webhook"]);
+
+    Route::post("transactions/verify/{gateway}", [TransactionController::class, "validateWebhook"]);
 });

@@ -41,16 +41,6 @@ class TransactionController extends Controller
                         "status" => $data["payment_status"] == "paid" ? TransactionEnums::successfulStatus : TransactionEnums::failedStatus
                     ];
                     $this->processTransaction($trans, $payData);
-                    // if ($order->status == OrderEnums::$pendingOrder) {
-                    //     $payData["status"] = $data["payment_status"] == BillingEnums::$paidPayment ? OrderEnums::$confirmedOrder : OrderEnums::$failedOrder;
-                    //     $order->update($payData);
-                    //     $order->products()->update(["status" => $payData["status"]]);
-                    //     //Send Confirmation email
-                    //     Mail::to($order->buyer->email)->queue(new SendOrderConfirmationMail($order));
-                    //     return successApiResponse("Payment verified successfully");
-                    // } else {
-                    //     return failedApiResponse("Transaction has been previously verified", [], [], 400);
-                    // }
                 }
                 break;
             default:

@@ -2,9 +2,9 @@
 
 namespace App\Models\Subscriptions;
 
+use App\Models\Configurations\AppFeature;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Configuration\AppFeature;
 
 class SubscriptionPlanFeatures extends Model
 {

@@ -6,6 +6,7 @@ use App\DTOs\SignupDataDto;
 use App\Enums\AppEnums;
 use App\Enums\AccountEnums;
 use App\Enums\ActivityLogEnums;
+use App\Enums\ChannelEnums;
 use App\Events\UserAccountVerified;
 use App\Interfaces\Auth\ISocialsAuthRepository;
 use App\Models\Configurations\SigninOption;
@@ -36,9 +37,9 @@ class SocialsAuthRepository implements ISocialsAuthRepository
     {
         !$redirect_url ? abort(400, "Redirect url is required") : null;
         switch ($option->code) {
-            case "fb":
+            case ChannelEnums::facebookChannelCode:
                 return $this->fbService->getLoginUrl($redirect_url, true);
-            case "google":
+            case ChannelEnums::googleChannelCode:
                 return $this->googleService->getLoginUrl($redirect_url);
             case "ig":
                 return $this->igService->getLoginUrl($redirect_url, true);
@@ -50,11 +51,11 @@ class SocialsAuthRepository implements ISocialsAuthRepository
     private function authorize($code, $data)
     {
         switch ($code) {
-            case "fb":
+            case ChannelEnums::facebookChannelCode:
                 verifyLoginState($data["state"], "fb-login-state");
                 $signupData = $this->fbService->getFbUserData($data["code"]);
                 break;
-            case "google":
+            case ChannelEnums::googleChannelCode:
                 verifyLoginState($data["state"], "google-login-state");
                 $signupData = $this->googleService->getGoogleUserData($data["code"]);
                 break;

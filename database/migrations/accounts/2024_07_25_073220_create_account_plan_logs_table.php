@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger("account_id");
             $table->unsignedBigInteger("plan_id");
-            $table->integer("plan_mode");
+            $table->string("plan_mode");
             $table->date("date_joined");
             $table->string("log_type");
             $table->string("subscription_mode");
