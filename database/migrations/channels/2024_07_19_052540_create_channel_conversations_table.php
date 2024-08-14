@@ -15,11 +15,15 @@ return new class extends Migration
         Schema::create('channel_conversations', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger("contact_id");
-            $table->longText("messages")->nullable();
-            $table->boolean("saturation_status")->default(false);
+            $table->unsignedBigInteger("admin_id")->nullable();
+            $table->longText("message")->nullable();
+            $table->longText("attachments")->nullable();
+            $table->text("sticker")->nullable();
+            $table->text("reaction")->nullable();
             $table->integer("status")->default(AppEnums::active);
             $table->timestamps();
             $table->foreign("contact_id")->references("id")->on("contacts")->cascadeOnDelete();
+            $table->foreign("admin_id")->references("id")->on("users")->restrictOnDelete();
         });
     }
 

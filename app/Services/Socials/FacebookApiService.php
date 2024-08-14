@@ -116,4 +116,18 @@ class FacebookApiService extends BaseApiService
             abort(400, "Error getting facebook data. Try again", ["data" => $resp]);
         return $resp;
     }
+
+
+    public function getFBContactProfile($psid, $pageToken)
+    {
+        //
+        $resp = $this->apiRequest()->getRequest(config("services.facebook.graph_url") . "/$psid", [
+            "access_token" => $pageToken,
+            "fields" => "first_name,last_name,profile_pic"
+        ]);
+        $resp = $resp->json() ?? [];
+        if (!$resp)
+            abort(400, "Error fetching facebook contact data. Try again", ["data" => $resp]);
+        return $resp;
+    }
 }

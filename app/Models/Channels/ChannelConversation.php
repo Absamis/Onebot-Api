@@ -12,9 +12,12 @@ class ChannelConversation extends Model
 
     protected $fillable = [
         "contact_id",
-        "messages",
-        "saturation_status",
-        "status"
+        "admin_id",
+        "message",
+        "attachments",
+        "sticker",
+        "reaction",
+        "status",
     ];
 
     protected function casts()

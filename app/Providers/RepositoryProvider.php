@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Interfaces\Auth\ISocialsAuthRepository;
 use App\Interfaces\Auth\IVerificationRepository;
 use App\Interfaces\Channels\IChannelsRepository;
+use App\Interfaces\Channels\IContactRepository;
 use App\Interfaces\Channels\IConversationsRepository;
 use App\Interfaces\IAccountRepository;
 use App\Interfaces\IReferralRepository;
@@ -23,7 +24,9 @@ use App\Services\Socials\InstagramApiService;
 use App\Services\Socials\GoogleService;
 use Illuminate\Support\ServiceProvider;
 use App\Interfaces\ISubscriptionPlanRepository;
+use App\Repository\Channels\ContactRepository;
 use App\Repository\SubscriptionPlanRepository;
+use App\Services\Socials\WhatsAppApiService;
 
 class RepositoryProvider extends ServiceProvider
 {
@@ -49,11 +52,17 @@ class RepositoryProvider extends ServiceProvider
         $this->app->bind(IChannelsRepository::class, ChannelsRepository::class);
         $this->app->bind(IConversationsRepository::class, ConversationsRepository::class);
         $this->app->bind(ISubscriptionPlanRepository::class, SubscriptionPlanRepository::class);
+        $this->app->bind(IContactRepository::class, ContactRepository::class);
 
         $this->app->bind(ISocialsAuthRepository::class, SocialsAuthRepository::class);
         $this->app->bind(FacebookApiService::class, function () {
             return new FacebookApiService(config("services.facebook.api_url"), "", config("services.facebook.app_id"), config("services.facebook.app_secret"));
         });
+
+        $this->app->bind(WhatsAppApiService::class, function () {
+            return new WhatsAppApiService(config("services.whatsapp.api_url"), "", config("services.whatsapp.app_id"), config("services.whatsapp.app_secret"));
+        });
+
         $this->app->bind(GoogleService::class, function () {
             return new GoogleService(config("services.google.api_url"), "", config("services.google.client_id"), config("services.google.client_secret"));
         });

@@ -39,6 +39,8 @@ class ChannelsRepository implements IChannelsRepository
                 return $this->igService->getLoginUrl($rdr, InstagramScopesEnums::loginScope, true);
             case ChannelEnums::whatsappChanelCode:
                 return $this->waService->getLoginUrl($rdr);
+            case ChannelEnums::telegramChannelCode:
+                break;
             default:
                 abort(400, "Invalid account option");
         }
@@ -90,6 +92,9 @@ class ChannelsRepository implements IChannelsRepository
                 break;
             case ChannelEnums::whatsappChanelCode:
                 $data["type"] = ChannelEnums::whatsappChanelCode;
+                break;
+            case ChannelEnums::telegramChannelCode:
+                $data["type"] = ChannelEnums::telegramChannelCode;
                 break;
             default:
                 abort(400, "Invalid request sent");

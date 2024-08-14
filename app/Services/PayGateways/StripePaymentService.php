@@ -88,4 +88,10 @@ class StripePaymentService
             exit();
         }
     }
+
+    public function getTransaction($ref)
+    {
+        $response = $this->stripeRequest->checkout->sessions->retrieve($ref);
+        return $response;
+    }
 }

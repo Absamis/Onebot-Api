@@ -59,6 +59,8 @@ Route::middleware("auth:sanctum")->group(function () {
         });
 
         Route::post("plans/purchase", [SubscriptionPlanController::class, "purchasePlan"]);
+
+        Route::get("transactions/{trans}/verify", [TransactionController::class, "validateTransaction"]);
     });
 });
 

@@ -71,7 +71,7 @@ class SubscriptionPlanRepository implements ISubscriptionPlanRepository
     private function updateAccountPlan($account, $planLog)
     {
         $daysLeft = 0;
-        $prevDueDate = strtotime($$account->plan_expiring_date);
+        $prevDueDate = strtotime($account->plan_expiring_date);
         if ($prevDueDate > time()) {
             $daysLeft = round(($prevDueDate - time()) / 60 / 60 / 24);
         }
@@ -85,7 +85,7 @@ class SubscriptionPlanRepository implements ISubscriptionPlanRepository
             $account->plan_expiring_date = date("Y-m-d", strtotime($dtJoined . " +$newDur days"));
             $account->save();
         } else {
-            $dtJoined = now()->toDate();
+            $dtJoined = date("Y-m-d");
             $account->plan_date_joined = $dtJoined;
             $account->plan_mode = $planLog->plan_mode;
             $account->plan_id = $planLog->plan_id;

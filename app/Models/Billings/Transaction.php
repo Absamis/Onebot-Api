@@ -2,6 +2,7 @@
 
 namespace App\Models\Billings;
 
+use App\Models\Account;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -22,4 +23,9 @@ class Transaction extends Model
         "transaction_date",
         "status",
     ];
+
+    public function account()
+    {
+        return $this->belongsTo(Account::class, "account_id");
+    }
 }

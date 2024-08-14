@@ -35,6 +35,7 @@ return [
     'facebook' => [
         'api_url' => env("FACEBOOK_API_URL"),
         'app_id' => env("FACEBOOK_APP_ID"),
+        'graph_url' => env("FACEBOOK_GRAPH_URL"),
         'app_secret' => env("FACEBOOK_APP_SECRET"),
         'api_version' => env("FACEBOOK_API_VERSION"),
         'config_id' => env("FACEBOOK_CONFIG_ID"),

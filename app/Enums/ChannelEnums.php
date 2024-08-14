@@ -9,4 +9,5 @@ enum ChannelEnums
     const whatsappChanelCode = "whatsapp";
     const instagramChannelCode = "ig";
     const googleChannelCode = "google";
+    const telegramChannelCode = "telegram";
 }
