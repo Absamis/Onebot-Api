@@ -3,6 +3,7 @@
 namespace App\Repository\Channels;
 
 use App\DTOs\CreateContactDTO;
+use App\DTOs\MessageAttachmentDTO;
 use App\DTOs\ReceiveContactMessageDTO;
 use App\Enums\ActivityLogEnums;
 use App\Enums\ChannelConversationEnums;
@@ -68,29 +69,17 @@ class ConversationsRepository extends BaseRepository implements IConversationsRe
 
     private function saveConversation(Contact $contact, ReceiveContactMessageDTO $rcv)
     {
-        $conv = $contact->conversations()->active()->first();
-        if (!$conv) {
-            $conv = new ChannelConversation();
-            $conv->contact_id = $contact->id;
-        }
-        $convMessage = $conv->messages ?? [];
-        $newConv = [
-            "id" => $rcv->id,
-            "app_type" => $rcv->channel,
+        $conv = $contact->conversations()->create([
+            "admin_id" => $rcv->admin,
+            "message" => $rcv->message,
             "date" => $rcv->date,
             "time" => $rcv->time,
-            "conv_type" => $rcv->conv_type,
-            "sender" => $rcv->sender,
-            "attached" => $rcv->attached,
-            "message" => $data["message"] ?? null,
-            "status" => ChannelConversationEnums::sendingStatus
-        ];
-        array_push($convMessage, $newConv);
-        if (count($convMessage) >= config("services.utils.max_chat_message_count"))
-        $conv->saturation_status = true;
-        $conv->messages = $convMessage;
-        $conv->save();
-        return $newConv;
+            "attachments" => $rcv->attached,
+            "sticker" => $rcv->sticker,
+            "reaction" => $rcv->reaction,
+            "status" => $rcv->status,
+        ]);
+        return $conv;
     }
 
     public function sendMessage($request, Contact $contact)
@@ -106,6 +95,7 @@ class ConversationsRepository extends BaseRepository implements IConversationsRe
         $files = $request->file("files") ?? [];
         $attached = [];
         foreach ($files as $key => $file) {
+            new MessageAttachmentDTO();
             $fData = [
                 "name" => Storage::name($file),
                 "type" => Storage::mimeType($file),
@@ -122,17 +112,14 @@ class ConversationsRepository extends BaseRepository implements IConversationsRe
             date: date("Y-m-d"),
             time: date("H:i:s"),
             conv_type: ChannelConversationEnums::adminConversationType,
-            sender: [
-                "id" => auth()->user()->id,
-                "name" => auth()->user()->name,
-                "type" => ChannelConversationEnums::adminConversationType,
-            ],
+            admin: auth()->user()->id,
             attached: $attached,
             channel: $contact->contact_app_type,
             status: ChannelConversationEnums::sendingStatus,
-            message: $data["message"] ?? null
+            message: $data["message"] ?? null,
+            reaction: $data["reaction"] ?? null,
+            sticker: $data["sticker"] ?? null
         );
-
         return $this->saveConversation($contact, $rcv);
     }
 }

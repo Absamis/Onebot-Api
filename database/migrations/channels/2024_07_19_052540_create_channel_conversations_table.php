@@ -16,10 +16,14 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger("contact_id");
             $table->unsignedBigInteger("admin_id")->nullable();
+            $table->unsignedBigInteger("reply_to_id")->nullable();
             $table->longText("message")->nullable();
             $table->longText("attachments")->nullable();
             $table->text("sticker")->nullable();
+            $table->date("date");
+            $table->time("time");
             $table->text("reaction")->nullable();
+            $table->text("misc_data")->nullable();
             $table->integer("status")->default(AppEnums::active);
             $table->timestamps();
             $table->foreign("contact_id")->references("id")->on("contacts")->cascadeOnDelete();

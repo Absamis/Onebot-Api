@@ -7,6 +7,7 @@ use App\Http\Controllers\Channels\ChannelController;
 use App\Http\Controllers\Channels\ConversationController;
 use App\Http\Controllers\Channels\FacebookChannelController;
 use App\Http\Controllers\Channels\InstagramChannelController;
+use App\Http\Controllers\Channels\TelegramChannelController;
 use App\Http\Controllers\Channels\WhatsAppChannelController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -77,6 +78,7 @@ Route::prefix("webhooks/callback")->group(function () {
     Route::match(["get", "post"], "facebook", [FacebookChannelController::class, "webhook"]);
     Route::match(["get", "post"], "instagram", [InstagramChannelController::class, "webhook"]);
     Route::match(["get", "post"], "whatsapp", [WhatsAppChannelController::class, "webhook"]);
+    Route::match(["get", "post"], "telegram", [TelegramChannelController::class, "webhook"]);
 
     Route::post("transactions/verify/{gateway}", [TransactionController::class, "validateWebhook"]);
 });

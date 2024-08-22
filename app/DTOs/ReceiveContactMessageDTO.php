@@ -17,6 +17,9 @@ class ReceiveContactMessageDTO
     public $status;
     public $channel;
     public $receiver;
+    public $sticker;
+    public $reaction;
+    public $admin;
     public function __construct(
         $id,
         $date,
@@ -27,7 +30,10 @@ class ReceiveContactMessageDTO
         $status,
         $sender = null,
         $receiver = null,
-        $attached = null
+        $attached = null,
+        $sticker = null,
+        $reaction = null,
+        $admin = null
     ) {
         //
         $this->id = $id;
@@ -40,5 +46,8 @@ class ReceiveContactMessageDTO
         $this->attached = $attached;
         $this->receiver = $receiver;
         $this->channel = $channel;
+        $this->sticker = $sticker;
+        $this->reaction = $reaction;
+        $this->admin = $admin;
     }
 }

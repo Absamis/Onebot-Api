@@ -31,6 +31,8 @@ class SendChatMessageRequest extends FormRequest
             "captions.*" => ["nullable"],
             "descriptions" => ["nullable"],
             "descriptions.*" => ["nullable"],
+            "reaction" => ["nullable"],
+            "sticker" => ["nullable"]
         ];
     }
 }

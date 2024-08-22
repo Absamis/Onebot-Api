@@ -13,8 +13,11 @@ class ChannelConversation extends Model
     protected $fillable = [
         "contact_id",
         "admin_id",
+        "reply_to_id",
         "message",
         "attachments",
+        "date",
+        "time",
         "sticker",
         "reaction",
         "status",
@@ -23,12 +26,11 @@ class ChannelConversation extends Model
     protected function casts()
     {
         return [
-            "messages" => "encrypted:array"
+            // "messages" => "encrypted:array"
+            "attachments" => "array"
         ];
     }
 
-    public function scopeActive(Builder $builder)
-    {
-        return $builder->where("saturation_status", false);
+    public function scopeActive(Builder $builder) {
     }
 }
