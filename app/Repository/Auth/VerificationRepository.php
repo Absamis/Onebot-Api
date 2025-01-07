@@ -54,7 +54,6 @@ class VerificationRepository implements IVerificationRepository
     }
 
 
-
     public function verifyToken($token, $type, $invalidate = false)
     {
         // Ensure we are only fetching active tokens

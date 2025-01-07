@@ -10,4 +10,5 @@ enum ChannelEnums
     const instagramChannelCode = "ig";
     const googleChannelCode = "google";
     const telegramChannelCode = "telegram";
+    const emailChannelCode = "email";
 }

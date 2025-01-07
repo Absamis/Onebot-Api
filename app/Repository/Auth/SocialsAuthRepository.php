@@ -41,7 +41,7 @@ class SocialsAuthRepository implements ISocialsAuthRepository
                 return $this->fbService->getLoginUrl($redirect_url, true);
             case ChannelEnums::googleChannelCode:
                 return $this->googleService->getLoginUrl($redirect_url);
-            case "ig":
+            case ChannelEnums::instagramChannelCode:
                 return $this->igService->getLoginUrl($redirect_url, true);
             default:
                 abort(400, "Signin option not available");
@@ -59,9 +59,11 @@ class SocialsAuthRepository implements ISocialsAuthRepository
                 verifyLoginState($data["state"], "google-login-state");
                 $signupData = $this->googleService->getGoogleUserData($data["code"]);
                 break;
-            case "instagram":
+            case ChannelEnums::instagramChannelCode:
                 verifyLoginState($data["state"], "ig-login-state");
                 $signupData = $this->igService->getIgUserData($data["code"]);
+                break;
+            case ChannelEnums::emailChannelCode:
                 break;
             default:
                 abort(400, "Signin option is not available");

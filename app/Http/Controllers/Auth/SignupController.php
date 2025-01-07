@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Classes\ApiResponse;
+use App\Enums\ChannelEnums;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Interfaces\Auth\ISocialsAuthRepository;
@@ -28,10 +29,15 @@ class SignupController extends Controller
 
     public function signup(Request $request, SigninOption $option)
     {
-        $data = $request->validate([
-            "code" => ["required"],
-            "state" => ["required"]
-        ]);
+        if ($option->code == ChannelEnums::emailChannelCode) {
+            $req = app('App\Http\Requests\Auth\SignupWithEmailRequest');
+            $data = $req->validated();
+        } else {
+            $data = $request->validate([
+                "code" => ["required"],
+                "state" => ["required"]
+            ]);
+        }
         $resp = $this->signupRepo->signup($option, $data);
         return ApiResponse::success("Signup successful", new UserResource($resp));
     }
