@@ -32,7 +32,7 @@ class FacebookApiService extends BaseApiService
         $scope = $scope ?? FacebookScopesEnums::loginScope;
         $req = $force ? "&auth_type=rerequest"  : null;
         $confId = config("services.facebook.config_id");
-        $url = "https://www.facebook.com/v20.0/dialog/oauth?client_id=$this->apiKey&redirect_uri=$redirect_url&state=$loginState&config_id=$confId&scope=$scope" . $req;
+        $url = "https://www.facebook.com/v20.0/dialog/oauth?client_id=$this->apiKey&redirect_uri=$redirect_url&response_type=code&state=$loginState&config_id=$confId&scope=$scope" . $req;
         return ["url" => $url, "app" => "facebook"];
     }
 
