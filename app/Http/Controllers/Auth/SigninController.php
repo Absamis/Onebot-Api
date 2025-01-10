@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Classes\ApiResponse;
+use App\Enums\ChannelEnums;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Interfaces\Auth\ISocialsAuthRepository;
@@ -20,10 +21,15 @@ class SigninController extends Controller
 
     public function signin(Request $request, SigninOption $option)
     {
-        $data = $request->validate([
-            "code" => ["required"],
-            "state" => ["required"]
-        ]);
+        if ($option->code == ChannelEnums::emailChannelCode) {
+            $req = app('App\Http\Requests\Auth\LoginRequest');
+            $data = $req->validated();
+        } else {
+            $data = $request->validate([
+                "code" => ["required"],
+                "state" => ["required"]
+            ]);
+        }
         $resp = $this->loginRepo->signin($option, $data);
         return ApiResponse::success("Signin successful", new UserResource($resp));
     }

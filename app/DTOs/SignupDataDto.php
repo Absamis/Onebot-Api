@@ -2,6 +2,8 @@
 
 namespace App\DTOs;
 
+use App\Enums\AccountEnums;
+
 class SignupDataDto
 {
     /**
@@ -15,6 +17,7 @@ class SignupDataDto
     public $tokenExpiresIn;
     public $type;
     public $photo;
+    public $status = AccountEnums::verifiedAccount;
     public function __construct()
     {
         //

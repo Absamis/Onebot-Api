@@ -36,7 +36,7 @@ class ChannelsRepository implements IChannelsRepository
             case ChannelEnums::facebookChannelCode:
                 return $this->fbService->getLoginUrl($rdr, FacebookScopesEnums::pageScopes);
             case ChannelEnums::instagramChannelCode:
-                return $this->igService->getLoginUrl($rdr, InstagramScopesEnums::loginScope, true);
+                return $this->igService->getLoginUrl($rdr);
             case ChannelEnums::whatsappChanelCode:
                 return $this->waService->getLoginUrl($rdr);
             case ChannelEnums::telegramChannelCode:

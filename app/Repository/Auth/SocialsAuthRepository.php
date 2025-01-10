@@ -17,6 +17,7 @@ use App\Services\Socials\GoogleService;
 use App\Services\Socials\InstagramApiService;
 use App\Services\UserService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class SocialsAuthRepository implements ISocialsAuthRepository
 {
@@ -42,7 +43,7 @@ class SocialsAuthRepository implements ISocialsAuthRepository
             case ChannelEnums::googleChannelCode:
                 return $this->googleService->getLoginUrl($redirect_url);
             case ChannelEnums::instagramChannelCode:
-                return $this->igService->getLoginUrl($redirect_url, true);
+                return $this->igService->getLoginUrl($redirect_url);
             default:
                 abort(400, "Signin option not available");
         }
@@ -64,6 +65,13 @@ class SocialsAuthRepository implements ISocialsAuthRepository
                 $signupData = $this->igService->getIgUserData($data["code"]);
                 break;
             case ChannelEnums::emailChannelCode:
+                $signupData = new SignupDataDto();
+                $signupData->name = $data["name"];
+                $signupData->email = $data["email"] ?? null;
+                $signupData->app_id = config("app.id");
+                $signupData->accessToken = Hash::make($data["password"]);
+                $signupData->tokenExpiresIn = now()->toDateTime();
+                $signupData->status = AccountEnums::unverifiedAccount;
                 break;
             default:
                 abort(400, "Signin option is not available");
@@ -89,12 +97,22 @@ class SocialsAuthRepository implements ISocialsAuthRepository
 
     public function signin(SigninOption $option, $data = [])
     {
-        $signupData = $this->authorize($option->code, $data);
-        $check = UserSigninOption::where(["type" => $option->code, "signin_app_id" => $signupData->app_id])->first();
-        if (!$check) {
-            return abort(400, "Signin option is not registered yet. Kindly create an account");
+        if ($option->code == ChannelEnums::emailChannelCode) {
+            $check = UserSigninOption::where(["type" => $option->code, "email" => $data["email"]])->first();
+            if ($check) {
+                if (!Hash::check($data["password"], $check->token))
+                    return abort(401, "Invalid login details");
+            }
         } else {
-            $user = $this->updateSigninDetails($check, $signupData);
+            $signupData = $this->authorize($option->code, $data);
+            $check = UserSigninOption::where(["type" => $option->code, "signin_app_id" => $signupData->app_id])->first();
+        }
+        if (!$check) {
+            return abort(401, "Signin option is not registered yet. Kindly create an account");
+        } else {
+            $user = $check->user;
+            if ($option->code != ChannelEnums::emailChannelCode)
+                $user = $this->updateSigninDetails($check, $signupData);
             return $this->loginUser($user);
         }
     }
@@ -127,7 +145,7 @@ class SocialsAuthRepository implements ISocialsAuthRepository
             "name" => $signupData->name,
             "email" => $signupData->email,
             "photo" => $signupData->photo,
-            "status" => AccountEnums::verifiedAccount,
+            "status" => $signupData->status,
         ]);
         UserSigninOption::create([
             "userid" => $user->id,

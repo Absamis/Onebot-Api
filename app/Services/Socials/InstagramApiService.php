@@ -33,8 +33,8 @@ class InstagramApiService extends BaseApiService
         $loginState = setLoginState("ig-login-state");
         Cache::put(getClientIP() . "-ig_rdr", $redirect_url, 300);
         $scope = $scopes ?? InstagramScopesEnums::loginScope;
-        $req = $force ? "&auth_type=rerequest" : null;
-        $url = "https://api.instagram.com/oauth/authorize?client_id=" . config("services.instagram.app_id") . "&response_type=code&redirect_uri=$redirect_url&state=$loginState&scope=$scope" . $req;
+        $req = $force ? "&force_authentication=1" : null;
+        $url = "https://www.instagram.com/oauth/authorize?enable_fb_login=0&client_id=" . config("services.instagram.app_id") . "&response_type=code&redirect_uri=$redirect_url&state=$loginState&scope=$scope" . $req;
         return ["url" => $url, "app" => "instagram"];
     }
 
